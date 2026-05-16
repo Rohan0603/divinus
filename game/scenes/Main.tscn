@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Shrine" type="ColorRect" parent="."]
+offset_left = 496.0
+offset_top = 284.0
+offset_right = 528.0
+offset_bottom = 316.0
+color = Color(0.9, 0.8, 0.1, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(512, 300)
+current = true
+zoom = 1.0
