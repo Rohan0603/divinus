@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install *)",
+      "Read(//mnt/c/project!!divinus/**)",
+      "Bash(python main.py)",
+      "PowerShell(cd \"C:\\\\project!!\\\\divinus\\\\backend\"; $env:USE_MOCK = \"true\"; Start-Process python -ArgumentList \"main.py\" -NoNewWindow)",
+      "Bash(curl -X GET http://localhost:8000/health)",
+      "Bash(curl -X POST http://localhost:8000/npc/dialogue -H 'Content-Type: application/json' -d '{ *)",
+      "PowerShell(Start-Process ollama -ArgumentList \"serve\" -NoNewWindow; Start-Sleep -Seconds 3)",
+      "Bash(curl -s -X POST http://localhost:8000/npc/dialogue -H 'Content-Type: application/json' -d '{\"npc_id\": 1, \"state\": \"witness\", \"boon_cast\": \"heal\", \"day\": 1}')",
+      "Bash(curl -s -X POST http://localhost:8000/npc/dialogue -H 'Content-Type: application/json' -d '{\"npc_id\": 2, \"state\": \"grateful\", \"boon_cast\": \"bless\", \"day\": 5}')",
+      "Bash(curl -s -X POST http://localhost:8000/npc/dialogue -H 'Content-Type: application/json' -d '{\"npc_id\": 3, \"state\": \"afraid\", \"boon_cast\": \"protect\", \"day\": 10}')"
+    ]
+  }
+}
