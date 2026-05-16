@@ -1,0 +1,68 @@
+# Godot
+game/.godot/
+game/export/
+game/*.import
+game/.DS_Store
+game/Thumbs.db
+
+# Python / Backend
+backend/__pycache__/
+backend/.env
+backend/venv/
+backend/env/
+backend/.venv/
+backend/*.pyc
+backend/*.pyo
+backend/*.egg-info/
+backend/dist/
+backend/build/
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Local environment
+.env
+.env.local
+.env.*.local
+
+# Node (if using npm/Claude CLI tools)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Temporary files
+*.tmp
+*.bak
+*.temp
+*.swp
+
+# Game sessions/saves (add if you implement save system)
+game/saves/
+game/user_data/
+
+# Ollama cache (optional, if on same machine)
+.ollama/
