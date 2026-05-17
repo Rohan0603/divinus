@@ -33,7 +33,7 @@ func _ready() -> void:
 func _spawn_npcs() -> void:
 	for i in range(NUM_STARTING_NPCS):
 		var npc := NPC_SCENE.instantiate()
-		npc.position = Vector2(randf_range(100.0, 924.0), randf_range(100.0, 500.0))
+		npc.position = Vector2(randf_range(220.0, 820.0), randf_range(160.0, 450.0))
 		add_child(npc)
 
 func _input(event: InputEvent) -> void:
@@ -50,7 +50,7 @@ func _on_npc_converted(npc: Node) -> void:
 
 func _on_shrine_unlocked() -> void:
 	var site := SHRINE_CONSTRUCTION_SCENE.instantiate()
-	site.position = Vector2(randf_range(100.0, 924.0), randf_range(100.0, 500.0))
+	site.position = Vector2(randf_range(220.0, 820.0), randf_range(160.0, 450.0))
 	add_child(site)
 	site.shrine_completed.connect(_on_shrine_completed.bind(site))
 	EventBus.shrine_site_placed.emit(site.position)
