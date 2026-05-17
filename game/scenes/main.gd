@@ -131,10 +131,14 @@ func _populate_terrain() -> void:
 	print("[DEBUG] TileSet source 1 tiles: ", tileset.get_source(1).get_tiles_count())
 	tilemap.tile_set = tileset
 
+	print("[DEBUG] TileMap layers count: ", tilemap.get_layers_count())
+
 	# Ensure TileMap has at least one layer
 	if tilemap.get_layers_count() == 0:
 		tilemap.add_layer(0)
 		print("[DEBUG] Added layer 0 to TileMap")
+	else:
+		print("[DEBUG] TileMap already has ", tilemap.get_layers_count(), " layer(s)")
 
 	var tile_size = 32
 	var grid_width = 1024 / tile_size
@@ -143,10 +147,15 @@ func _populate_terrain() -> void:
 	print("[DEBUG] Grid: ", grid_width, "x", grid_height)
 	print("[DEBUG] Populating terrain...")
 
+	# Test set_cell on first position
+	print("[DEBUG] Attempting set_cell(0, Vector2i(0,0), source_id=0, atlas=Vector2i(0,0))")
+	tilemap.set_cell(0, Vector2i(0, 0), 0, Vector2i(0, 0))
+	var test_cell = tilemap.get_cell_source_id(0, Vector2i(0, 0))
+	print("[DEBUG] After set_cell, test cell source ID: ", test_cell)
+
 	var cell_count = 0
 	for x in range(grid_width):
 		for y in range(grid_height):
-			# Grass tile (ID 0) for all positions; occasional dirt (ID 1)
 			var source_id = 1 if randf() < 0.15 else 0
 			tilemap.set_cell(0, Vector2i(x, y), source_id, Vector2i(0, 0))
 			cell_count += 1
