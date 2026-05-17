@@ -23,6 +23,9 @@ signal day_changed(day_number: int)
 # Emitted 30 seconds before the day ends — triggers enemy waves
 signal day_ending(day_number: int)
 
+# Emitted when an enemy spawns during a raid
+signal enemy_spawned(position: Vector2)
+
 # Emitted when an enemy wave starts
 signal wave_started(wave_config: Dictionary)
 

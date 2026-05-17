@@ -302,6 +302,18 @@ func take_damage() -> void:
 	sprite.color = ROLE_COLORS["Unaware"]
 	_pick_wander_target()
 
+# Combat feedback: Flash white briefly and scale punchback
+func hit_flash() -> void:
+	var orig_scale = sprite.scale
+	var orig_color = sprite.color
+	sprite.color = Color.WHITE
+	sprite.scale = orig_scale * 1.2
+	await get_tree().create_timer(0.1).timeout
+	sprite.scale = orig_scale * 0.95
+	await get_tree().create_timer(0.1).timeout
+	sprite.color = orig_color
+	sprite.scale = orig_scale
+
 # --- Skill ---
 
 func _efficiency() -> float:

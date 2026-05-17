@@ -8,12 +8,19 @@ const BOON_SCENE := preload("res://scenes/Boon.tscn")
 
 const NUM_STARTING_NPCS := 6
 const BOON_COST := 5.0
+const SCREEN_SHAKE_INTENSITY := 4.0
+const SCREEN_SHAKE_DURATION := 0.3
 
 var _head_preacher_assigned := false
+var _camera: Camera2D
 
 func _ready() -> void:
+	_camera = $Camera2D
+	_camera.make_current()
 	EventBus.shrine_unlocked.connect(_on_shrine_unlocked)
 	EventBus.npc_converted.connect(_on_npc_converted)
+	EventBus.day_ending.connect(_on_day_ending)
+	EventBus.enemy_spawned.connect(_on_enemy_spawned)
 	GodStats.game_over.connect(_on_game_over)
 	_spawn_npcs()
 
@@ -51,3 +58,26 @@ func _on_shrine_completed(site: Node) -> void:
 
 func _on_game_over() -> void:
 	print("Game Over! All followers lost.")
+
+func _on_day_ending(_day_number: int) -> void:
+	# Screen shake when raid begins
+	_screen_shake()
+
+func _on_enemy_spawned(_position: Vector2) -> void:
+	# Optional: mini shake on each enemy spawn (can be intense, so just on day_ending for now)
+	pass
+
+# Screen shake effect using camera
+func _screen_shake() -> void:
+	var orig_offset = _camera.offset
+	var elapsed = 0.0
+
+	while elapsed < SCREEN_SHAKE_DURATION:
+		_camera.offset = orig_offset + Vector2(
+			randf_range(-SCREEN_SHAKE_INTENSITY, SCREEN_SHAKE_INTENSITY),
+			randf_range(-SCREEN_SHAKE_INTENSITY, SCREEN_SHAKE_INTENSITY)
+		)
+		elapsed += get_physics_process_delta_time()
+		await get_tree().process_frame
+
+	_camera.offset = orig_offset
