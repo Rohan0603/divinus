@@ -93,77 +93,46 @@ func _screen_shake() -> void:
 # Populate tilemap with simple grass terrain
 func _populate_terrain() -> void:
 	var tilemap: TileMap = $TileMap
-	print("[DEBUG] TileMap node: ", tilemap)
-	print("[DEBUG] TileMap visible: ", tilemap.visible)
-
-	# Create TileSet programmatically instead of loading from .tres
 	var tileset = TileSet.new()
 	tileset.tile_size = Vector2i(32, 32)
 
 	# Create grass texture (green)
 	var grass_image = Image.create(32, 32, false, Image.FORMAT_RGB8)
-	grass_image.fill(Color(0.2, 0.7, 0.2))  # Medium green
+	grass_image.fill(Color(0.2, 0.7, 0.2))
 	var grass_texture = ImageTexture.new()
 	grass_texture.set_image(grass_image)
-	print("[DEBUG] Grass texture created (green)")
 
 	# Create dirt texture (brown)
 	var dirt_image = Image.create(32, 32, false, Image.FORMAT_RGB8)
-	dirt_image.fill(Color(0.6, 0.4, 0.2))  # Brown
+	dirt_image.fill(Color(0.6, 0.4, 0.2))
 	var dirt_texture = ImageTexture.new()
 	dirt_texture.set_image(dirt_image)
-	print("[DEBUG] Dirt texture created (brown)")
 
-	# Create TileSetAtlasSource for grass tiles
+	# Create tile sources
 	var grass_source = TileSetAtlasSource.new()
 	grass_source.texture = grass_texture
 	grass_source.texture_region_size = Vector2i(32, 32)
 	grass_source.create_tile(Vector2i(0, 0))
-	print("[DEBUG] Grass source tiles: ", grass_source.get_tiles_count())
 
-	# Create TileSetAtlasSource for dirt tiles
 	var dirt_source = TileSetAtlasSource.new()
 	dirt_source.texture = dirt_texture
 	dirt_source.texture_region_size = Vector2i(32, 32)
 	dirt_source.create_tile(Vector2i(0, 0))
-	print("[DEBUG] Dirt source tiles: ", dirt_source.get_tiles_count())
 
-	# Add sources to tileset
 	tileset.add_source(grass_source, 0)
 	tileset.add_source(dirt_source, 1)
-
-	print("[DEBUG] TileSet created programmatically with ", tileset.get_source_count(), " sources")
-	print("[DEBUG] TileSet source 0 tiles: ", tileset.get_source(0).get_tiles_count())
-	print("[DEBUG] TileSet source 1 tiles: ", tileset.get_source(1).get_tiles_count())
 	tilemap.tile_set = tileset
 
-	print("[DEBUG] TileMap layers count: ", tilemap.get_layers_count())
-
-	# Ensure TileMap has at least one layer
+	# Ensure layer exists
 	if tilemap.get_layers_count() == 0:
 		tilemap.add_layer(0)
-		print("[DEBUG] Added layer 0 to TileMap")
-	else:
-		print("[DEBUG] TileMap already has ", tilemap.get_layers_count(), " layer(s)")
 
+	# Populate grid
 	var tile_size = 32
 	var grid_width = 1024 / tile_size
 	var grid_height = 600 / tile_size
 
-	print("[DEBUG] Grid: ", grid_width, "x", grid_height)
-	print("[DEBUG] Populating terrain...")
-
-	# Test set_cell on first position
-	print("[DEBUG] Attempting set_cell(0, Vector2i(0,0), source_id=0, atlas=Vector2i(0,0))")
-	tilemap.set_cell(0, Vector2i(0, 0), 0, Vector2i(0, 0))
-	var test_cell = tilemap.get_cell_source_id(0, Vector2i(0, 0))
-	print("[DEBUG] After set_cell, test cell source ID: ", test_cell)
-
-	var cell_count = 0
 	for x in range(grid_width):
 		for y in range(grid_height):
 			var source_id = 1 if randf() < 0.15 else 0
 			tilemap.set_cell(0, Vector2i(x, y), source_id, Vector2i(0, 0))
-			cell_count += 1
-
-	print("[DEBUG] Terrain populated: ", cell_count, " cells")
