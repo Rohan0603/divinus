@@ -100,12 +100,19 @@ func _populate_terrain() -> void:
 	var tileset = TileSet.new()
 	tileset.tile_size = Vector2i(32, 32)
 
-	# Load the actual grass texture
-	var grass_texture = load("res://resources/grass.png")
-	print("[DEBUG] Grass texture loaded: ", grass_texture)
+	# Create grass texture (green)
+	var grass_image = Image.create(32, 32, false, Image.FORMAT_RGB8)
+	grass_image.fill(Color(0.2, 0.7, 0.2))  # Medium green
+	var grass_texture = ImageTexture.new()
+	grass_texture.set_image(grass_image)
+	print("[DEBUG] Grass texture created (green)")
 
-	# For now, use same texture for both grass and dirt
-	var dirt_texture = grass_texture
+	# Create dirt texture (brown)
+	var dirt_image = Image.create(32, 32, false, Image.FORMAT_RGB8)
+	dirt_image.fill(Color(0.6, 0.4, 0.2))  # Brown
+	var dirt_texture = ImageTexture.new()
+	dirt_texture.set_image(dirt_image)
+	print("[DEBUG] Dirt texture created (brown)")
 
 	# Create TileSetAtlasSource for grass tiles
 	var grass_source = TileSetAtlasSource.new()
