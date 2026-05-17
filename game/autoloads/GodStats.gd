@@ -28,6 +28,13 @@ signal divine_power_changed(new_value: float)
 signal level_up(new_level: int)
 signal game_over()
 
+# === Rival God State ===
+var rival_divine_power: float = 0.0
+var rival_followers: int = 0
+var rival_shrines_built: int = 0
+
+signal rival_stats_changed()
+
 func add_divine_power(amount: float) -> void:
 	divine_power = min(divine_power + amount, max_divine_power)
 	divine_power_changed.emit(divine_power)
@@ -85,3 +92,15 @@ func register_role(role: String) -> void:
 func unregister_role(role: String) -> void:
 	if role in role_counts and role_counts[role] > 0:
 		role_counts[role] -= 1
+
+func add_rival_divine_power(amount: float) -> void:
+	rival_divine_power = max(0.0, rival_divine_power + amount)
+	rival_stats_changed.emit()
+
+func add_rival_follower() -> void:
+	rival_followers += 1
+	rival_stats_changed.emit()
+
+func remove_rival_follower() -> void:
+	rival_followers = max(0, rival_followers - 1)
+	rival_stats_changed.emit()
