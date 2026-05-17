@@ -8,7 +8,7 @@ var _active_rivals: Array = []
 var _world_root: Node = null
 
 func _ready() -> void:
-	DayClock.day_changed.connect(_on_day_changed)
+	EventBus.day_changed.connect(_on_day_changed)
 	GodStats.game_over.connect(_on_game_over)
 	EventBus.rival_boon_cast.connect(_on_rival_boon_cast)
 
