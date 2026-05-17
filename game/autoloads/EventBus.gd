@@ -8,6 +8,9 @@ extends Node
 # Emitted when god casts a boon at a position
 signal boon_cast(boon_data: Dictionary, position: Vector2)
 
+# Emitted when a rival god casts a boon
+signal rival_boon_cast(boon_data: Dictionary, position: Vector2)
+
 # Emitted when an NPC converts to a follower
 signal npc_converted(npc: Node)
 
@@ -37,3 +40,6 @@ signal shrine_site_placed(site_position: Vector2)
 
 # Emitted when an NPC is assigned a civilization role
 signal npc_role_assigned(npc: Node, role: String)
+
+# Emitted when the player survives day 15 (win condition)
+signal day_won()
