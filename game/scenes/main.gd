@@ -102,5 +102,5 @@ func _populate_terrain() -> void:
 	for x in range(grid_width):
 		for y in range(grid_height):
 			# Grass tile (ID 0) for all positions; occasional dirt (ID 1)
-			var tile_id = 1 if randf() < 0.15 else 0
-			tilemap.set_cell(0, Vector2i(x, y), 0, Vector2i(tile_id, 0))
+			var source_id = 1 if randf() < 0.15 else 0
+			tilemap.set_cell(0, Vector2i(x, y), source_id, Vector2i(0, 0))
