@@ -113,18 +113,22 @@ func _populate_terrain() -> void:
 	grass_source.texture = grass_texture
 	grass_source.texture_region_size = Vector2i(32, 32)
 	grass_source.create_tile(Vector2i(0, 0))
+	print("[DEBUG] Grass source tiles: ", grass_source.get_tiles_count())
 
 	# Create TileSetAtlasSource for dirt tiles
 	var dirt_source = TileSetAtlasSource.new()
 	dirt_source.texture = grass_texture
 	dirt_source.texture_region_size = Vector2i(32, 32)
 	dirt_source.create_tile(Vector2i(0, 0))
+	print("[DEBUG] Dirt source tiles: ", dirt_source.get_tiles_count())
 
 	# Add sources to tileset
 	tileset.add_source(grass_source, 0)
 	tileset.add_source(dirt_source, 1)
 
 	print("[DEBUG] TileSet created programmatically with ", tileset.get_source_count(), " sources")
+	print("[DEBUG] TileSet source 0 tiles: ", tileset.get_source(0).get_tiles_count())
+	print("[DEBUG] TileSet source 1 tiles: ", tileset.get_source(1).get_tiles_count())
 	tilemap.tile_set = tileset
 
 	var tile_size = 32
