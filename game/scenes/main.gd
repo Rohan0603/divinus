@@ -93,14 +93,28 @@ func _screen_shake() -> void:
 # Populate tilemap with simple grass terrain
 func _populate_terrain() -> void:
 	var tilemap: TileMap = $TileMap
-	tilemap.tile_set = load("res://resources/terrain_tileset.tres")
+	print("[DEBUG] TileMap node: ", tilemap)
+	print("[DEBUG] TileMap visible: ", tilemap.visible)
+
+	var tileset = load("res://resources/terrain_tileset.tres")
+	print("[DEBUG] TileSet loaded: ", tileset)
+	print("[DEBUG] TileSet sources: ", tileset.get_source_count() if tileset else "NULL")
+
+	tilemap.tile_set = tileset
 
 	var tile_size = 32
 	var grid_width = 1024 / tile_size
 	var grid_height = 600 / tile_size
 
+	print("[DEBUG] Grid: ", grid_width, "x", grid_height)
+	print("[DEBUG] Populating terrain...")
+
+	var cell_count = 0
 	for x in range(grid_width):
 		for y in range(grid_height):
 			# Grass tile (ID 0) for all positions; occasional dirt (ID 1)
 			var source_id = 1 if randf() < 0.15 else 0
 			tilemap.set_cell(0, Vector2i(x, y), source_id, Vector2i(0, 0))
+			cell_count += 1
+
+	print("[DEBUG] Terrain populated: ", cell_count, " cells")
