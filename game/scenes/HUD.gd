@@ -50,3 +50,16 @@ func _on_level_up(new_level: int) -> void:
 func _on_day_changed(day_number: int) -> void:
 	# This is handled in _process(), but we can log it
 	print("Day changed to: ", day_number)
+
+func _input(event: InputEvent) -> void:
+	# Fastforward controls for testing
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_T:
+			if event.shift_pressed:
+				# Shift+T: Jump to day 15 (win condition)
+				DayClock.skip_to_day(15)
+				get_tree().root.set_input_as_handled()
+			else:
+				# T: Skip to next day
+				DayClock.skip_to_day(DayClock.current_day + 1)
+				get_tree().root.set_input_as_handled()
