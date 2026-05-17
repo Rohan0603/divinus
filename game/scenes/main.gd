@@ -104,9 +104,9 @@ func _populate_terrain() -> void:
 	# Scale kenney tiles from 256x512 to 64x128 at runtime
 	# Diamond face = top 64x32; 3D depth = remaining 64x96
 	var paths := [
-		"res://resources/tiles/kenney_dirt.png",
-		"res://resources/tiles/kenney_dirtTiles.png",
-		"res://resources/tiles/kenney_stone.png",
+		"res://Angle/dirtTiles_S.png",
+		"res://Angle/stoneTile_S.png",
+		"res://Angle/planks_S.png",
 	]
 	for idx in paths.size():
 		var img: Image = (load(paths[idx]) as Texture2D).get_image()
@@ -132,10 +132,10 @@ func _populate_terrain() -> void:
 		for j in range(38):
 			var rng := randf()
 			var source_id: int
-			if rng < 0.10:
-				source_id = 2  # stone accent
-			elif rng < 0.30:
-				source_id = 0  # plain dirt (sandy patches)
+			if rng < 0.08:
+				source_id = 2  # planks accent (rare wooden floor sections)
+			elif rng < 0.25:
+				source_id = 1  # stone tile (carved stone patches)
 			else:
-				source_id = 1  # dirtTiles (main tiled floor)
+				source_id = 0  # dirtTiles (main dungeon floor)
 			tilemap.set_cell(0, Vector2i(i, j), source_id, Vector2i(0, 0))
