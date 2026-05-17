@@ -16,6 +16,8 @@ var _head_preacher_assigned := false
 var _camera: Camera2D
 
 func _ready() -> void:
+	self.y_sort_enabled = true
+	RenderingServer.set_default_clear_color(Color(0.05, 0.04, 0.08))
 	_camera = $Camera2D
 	_camera.make_current()
 	EventBus.shrine_unlocked.connect(_on_shrine_unlocked)
@@ -90,49 +92,50 @@ func _screen_shake() -> void:
 
 	_camera.offset = orig_offset
 
-# Populate tilemap with simple grass terrain
+# Populate tilemap with isometric kenney terrain
 func _populate_terrain() -> void:
 	var tilemap: TileMap = $TileMap
-	var tileset = TileSet.new()
-	tileset.tile_size = Vector2i(32, 32)
+	var tileset := TileSet.new()
+	tileset.tile_size = Vector2i(64, 32)
+	tileset.tile_shape = TileSet.TILE_SHAPE_ISOMETRIC
+	tileset.tile_layout = TileSet.TILE_LAYOUT_DIAMOND_DOWN
+	tileset.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_HORIZONTAL
 
-	# Create grass texture (green)
-	var grass_image = Image.create(32, 32, false, Image.FORMAT_RGB8)
-	grass_image.fill(Color(0.2, 0.7, 0.2))
-	var grass_texture = ImageTexture.new()
-	grass_texture.set_image(grass_image)
+	# Scale kenney tiles from 256x512 to 64x128 at runtime
+	# Diamond face = top 64x32; 3D depth = remaining 64x96
+	var paths := [
+		"res://resources/tiles/kenney_dirt.png",
+		"res://resources/tiles/kenney_dirtTiles.png",
+		"res://resources/tiles/kenney_stone.png",
+	]
+	for idx in paths.size():
+		var img: Image = (load(paths[idx]) as Texture2D).get_image()
+		img.resize(64, 128, Image.INTERPOLATE_BILINEAR)
+		var tex := ImageTexture.create_from_image(img)
+		var src := TileSetAtlasSource.new()
+		src.texture = tex
+		src.texture_region_size = Vector2i(64, 128)
+		src.create_tile(Vector2i(0, 0))
+		tileset.add_source(src, idx)
 
-	# Create dirt texture (brown)
-	var dirt_image = Image.create(32, 32, false, Image.FORMAT_RGB8)
-	dirt_image.fill(Color(0.6, 0.4, 0.2))
-	var dirt_texture = ImageTexture.new()
-	dirt_texture.set_image(dirt_image)
-
-	# Create tile sources
-	var grass_source = TileSetAtlasSource.new()
-	grass_source.texture = grass_texture
-	grass_source.texture_region_size = Vector2i(32, 32)
-	grass_source.create_tile(Vector2i(0, 0))
-
-	var dirt_source = TileSetAtlasSource.new()
-	dirt_source.texture = dirt_texture
-	dirt_source.texture_region_size = Vector2i(32, 32)
-	dirt_source.create_tile(Vector2i(0, 0))
-
-	tileset.add_source(grass_source, 0)
-	tileset.add_source(dirt_source, 1)
 	tilemap.tile_set = tileset
 
-	# Ensure layer exists
 	if tilemap.get_layers_count() == 0:
 		tilemap.add_layer(0)
+	tilemap.set_layer_y_sort_enabled(0, true)
 
-	# Populate grid
-	var tile_size = 32
-	var grid_width = 1024 / tile_size
-	var grid_height = 600 / tile_size
+	# Center isometric diamond on 1024x600 viewport
+	# tile(i,j) → world(512+(i-j)*32, (i+j)*16)
+	tilemap.position = Vector2(512, 0)
 
-	for x in range(grid_width):
-		for y in range(grid_height):
-			var source_id = 1 if randf() < 0.15 else 0
-			tilemap.set_cell(0, Vector2i(x, y), source_id, Vector2i(0, 0))
+	for i in range(34):
+		for j in range(38):
+			var rng := randf()
+			var source_id: int
+			if rng < 0.10:
+				source_id = 2  # stone accent
+			elif rng < 0.30:
+				source_id = 0  # plain dirt (sandy patches)
+			else:
+				source_id = 1  # dirtTiles (main tiled floor)
+			tilemap.set_cell(0, Vector2i(i, j), source_id, Vector2i(0, 0))
