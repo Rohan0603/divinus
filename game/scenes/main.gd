@@ -105,9 +105,9 @@ func _populate_terrain() -> void:
 	# Scale kenney tiles from 256x512 to 64x128 at runtime
 	# Diamond face = top 64x32; 3D depth = remaining 64x96
 	var paths := [
-		"res://Angle/dirtTiles_S.png",
-		"res://Angle/stoneTile_S.png",
-		"res://Angle/planks_S.png",
+		"res://assets/tiles/dirtTiles_S.png",
+		"res://assets/tiles/stoneTile_S.png",
+		"res://assets/tiles/planks_S.png",
 	]
 	for idx in paths.size():
 		var img: Image = (load(paths[idx]) as Texture2D).get_image()
@@ -144,11 +144,11 @@ func _populate_terrain() -> void:
 func _spawn_dungeon_props() -> void:
 	const PROP_SCALE := Vector2(0.18, 0.18)
 	const PROP_TEXTURES := [
-		"res://Angle/barrel_S.png",
-		"res://Angle/barrelsStacked_S.png",
-		"res://Angle/chestClosed_S.png",
-		"res://Angle/stoneColumn_S.png",
-		"res://Angle/stoneColumnWood_S.png",
+		"res://assets/props/barrel_S.png",
+		"res://assets/props/barrelsStacked_S.png",
+		"res://assets/props/chestClosed_S.png",
+		"res://assets/props/stoneColumn_S.png",
+		"res://assets/props/stoneColumnWood_S.png",
 	]
 	const NUM_PROPS := 22
 	const MIN_DIST := 60.0
@@ -156,7 +156,7 @@ func _spawn_dungeon_props() -> void:
 	var placed: Array[Vector2] = []
 
 	for _i in range(NUM_PROPS):
-		var tex_path := PROP_TEXTURES[randi() % PROP_TEXTURES.size()]
+		var tex_path: String = PROP_TEXTURES[randi() % PROP_TEXTURES.size()]
 		var tex := load(tex_path) as Texture2D
 		if tex == null:
 			continue
