@@ -131,6 +131,11 @@ func _populate_terrain() -> void:
 	print("[DEBUG] TileSet source 1 tiles: ", tileset.get_source(1).get_tiles_count())
 	tilemap.tile_set = tileset
 
+	# Ensure TileMap has at least one layer
+	if tilemap.get_layers_count() == 0:
+		tilemap.add_layer(0)
+		print("[DEBUG] Added layer 0 to TileMap")
+
 	var tile_size = 32
 	var grid_width = 1024 / tile_size
 	var grid_height = 600 / tile_size
