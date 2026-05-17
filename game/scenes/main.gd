@@ -96,24 +96,35 @@ func _populate_terrain() -> void:
 	print("[DEBUG] TileMap node: ", tilemap)
 	print("[DEBUG] TileMap visible: ", tilemap.visible)
 
-	# Diagnostic: test if texture loads directly
+	# Create TileSet programmatically instead of loading from .tres
+	var tileset = TileSet.new()
+	tileset.tile_size = Vector2i(32, 32)
+
+	# Load the texture
 	var grass_texture = load("res://resources/grass.png")
 	print("[DEBUG] Grass texture loaded: ", grass_texture)
 
-	# Diagnostic: try loading .tres with error handling
-	if ResourceLoader.exists("res://resources/terrain_tileset.tres"):
-		print("[DEBUG] .tres file exists in resource system")
-	else:
-		print("[DEBUG] .tres file NOT found in resource system")
+	if grass_texture == null:
+		push_error("Failed to load grass.png")
+		return
 
-	var tileset = load("res://resources/terrain_tileset.tres")
-	print("[DEBUG] TileSet loaded: ", tileset)
+	# Create TileSetAtlasSource for grass tiles
+	var grass_source = TileSetAtlasSource.new()
+	grass_source.texture = grass_texture
+	grass_source.texture_region_size = Vector2i(32, 32)
+	grass_source.create_tile(Vector2i(0, 0))
 
-	# If null, list all errors
-	if tileset == null:
-		var errors = ResourceLoader.get_error()
-		print("[DEBUG] ResourceLoader error: ", errors)
+	# Create TileSetAtlasSource for dirt tiles
+	var dirt_source = TileSetAtlasSource.new()
+	dirt_source.texture = grass_texture
+	dirt_source.texture_region_size = Vector2i(32, 32)
+	dirt_source.create_tile(Vector2i(0, 0))
 
+	# Add sources to tileset
+	tileset.add_source(grass_source, 0)
+	tileset.add_source(dirt_source, 1)
+
+	print("[DEBUG] TileSet created programmatically with ", tileset.get_source_count(), " sources")
 	tilemap.tile_set = tileset
 
 	var tile_size = 32
