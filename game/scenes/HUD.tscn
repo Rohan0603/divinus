@@ -26,3 +26,9 @@ text = "Level: 1"
 [node name="DayLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 text = "Day: 1 | Time: 3:00"
+
+[node name="FastForwardNotificationLabel" type="Label" parent="."]
+offset_left = 10.0
+offset_top = 10.0
+text = ""
+modulate = Color(1, 1, 1, 0)

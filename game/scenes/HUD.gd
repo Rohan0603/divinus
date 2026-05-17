@@ -9,6 +9,10 @@ extends CanvasLayer
 @onready var followers_label: Label = $VBoxContainer/FollowersLabel
 @onready var level_label: Label = $VBoxContainer/LevelLabel
 @onready var day_label: Label = $VBoxContainer/DayLabel
+@onready var fastforward_notification_label: Label = $FastForwardNotificationLabel
+
+# Notification system
+var _notification_fade_timer: float = 0.0
 
 func _ready() -> void:
 	# Connect to GodStats signals
@@ -34,6 +38,15 @@ func _process(delta: float) -> void:
 	var seconds = int(time_remaining) % 60
 	day_label.text = "Day: %d | Time: %d:%02d" % [DayClock.current_day, minutes, seconds]
 
+	# Fade out notification
+	if _notification_fade_timer > 0.0:
+		_notification_fade_timer -= delta
+		if _notification_fade_timer <= 0.0:
+			fastforward_notification_label.modulate.a = 0.0
+		else:
+			# Fade from opaque to transparent over 2 seconds
+			fastforward_notification_label.modulate.a = _notification_fade_timer / 2.0
+
 # Called when energy changes
 func _on_energy_changed(new_energy: float) -> void:
 	energy_label.text = "Energy: %.1f / %.1f" % [new_energy, GodStats.max_divine_power]
@@ -51,6 +64,11 @@ func _on_day_changed(day_number: int) -> void:
 	# This is handled in _process(), but we can log it
 	print("Day changed to: ", day_number)
 
+func _show_notification(text: String) -> void:
+	fastforward_notification_label.text = text
+	fastforward_notification_label.modulate.a = 1.0
+	_notification_fade_timer = 2.0  # Show for 2 seconds
+
 func _input(event: InputEvent) -> void:
 	# Fastforward controls for testing
 	if event is InputEventKey and event.pressed:
@@ -58,8 +76,11 @@ func _input(event: InputEvent) -> void:
 			if event.shift_pressed:
 				# Shift+T: Jump to day 15 (win condition)
 				DayClock.skip_to_day(15)
+				_show_notification("Jumped to day 15")
 				get_tree().root.set_input_as_handled()
 			else:
 				# T: Skip to next day
-				DayClock.skip_to_day(DayClock.current_day + 1)
+				var next_day = DayClock.current_day + 1
+				DayClock.skip_to_day(next_day)
+				_show_notification("Day +1 (now day %d)" % next_day)
 				get_tree().root.set_input_as_handled()
