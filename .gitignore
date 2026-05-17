@@ -5,6 +5,16 @@ game/*.import
 game/.DS_Store
 game/Thumbs.db
 
+# Godot AI plugin — generated server files, don't commit
+game/addons/godot_ai/.venv/
+game/addons/godot_ai/server/__pycache__/
+game/addons/godot_ai/server/.venv/
+game/addons/godot_ai/**/__pycache__/
+game/addons/godot_ai/telemetry.json
+
+# Godot UID cache files (auto-generated, safe to gitignore but also safe to commit)
+# game/**/*.uid
+
 # Python / Backend
 backend/__pycache__/
 backend/.env

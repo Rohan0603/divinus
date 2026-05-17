@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://b3kq4r5shrine1"]
+
+[ext_resource type="Script" path="res://scenes/Shrine.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_shrine1"]
+radius = 20.0
+
+[node name="Shrine" type="StaticBody2D"]
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_shrine1")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.8, 0.6, 0.0, 1.0)

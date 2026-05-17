@@ -10,7 +10,23 @@
       "PowerShell(Start-Process ollama -ArgumentList \"serve\" -NoNewWindow; Start-Sleep -Seconds 3)",
       "Bash(curl -s -X POST http://localhost:8000/npc/dialogue -H 'Content-Type: application/json' -d '{\"npc_id\": 1, \"state\": \"witness\", \"boon_cast\": \"heal\", \"day\": 1}')",
       "Bash(curl -s -X POST http://localhost:8000/npc/dialogue -H 'Content-Type: application/json' -d '{\"npc_id\": 2, \"state\": \"grateful\", \"boon_cast\": \"bless\", \"day\": 5}')",
-      "Bash(curl -s -X POST http://localhost:8000/npc/dialogue -H 'Content-Type: application/json' -d '{\"npc_id\": 3, \"state\": \"afraid\", \"boon_cast\": \"protect\", \"day\": 10}')"
+      "Bash(curl -s -X POST http://localhost:8000/npc/dialogue -H 'Content-Type: application/json' -d '{\"npc_id\": 3, \"state\": \"afraid\", \"boon_cast\": \"protect\", \"day\": 10}')",
+      "PowerShell(head *)",
+      "PowerShell(&\"C:\\\\Users\\\\leoZblack\\\\Desktop\\\\Godot_v4.6.2-stable_win64_console.exe\" --path \"C:\\\\project!!\\\\divinus\\\\game\" --headless 2>&1 | Select-Object -First 100)",
+      "PowerShell(&\"C:\\\\Users\\\\leoZblack\\\\Desktop\\\\Godot_v4.6.2-stable_win64_console.exe\" --path \"C:\\\\project!!\\\\divinus\\\\game\" --headless 2>&1 | Select-Object -First 50)",
+      "Bash(timeout 30 \"C:\\\\Users\\\\leoZblack\\\\Desktop\\\\Godot_v4.6.2-stable_win64_console.exe\" --path \".\" --headless)",
+      "PowerShell(Start-Process -FilePath \"C:\\\\Users\\\\leoZblack\\\\Desktop\\\\Godot_v4.6.2-stable_win64.exe\" -ArgumentList \"--path `\"C:\\\\project!!\\\\divinus\\\\game`\"\" -NoNewWindow)",
+      "Bash(xargs cat)",
+      "Bash(git -C C:/project!!/divinus log --oneline -10)",
+      "Bash(New-Item -Path \"C:\\\\project!!\\\\divinus\\\\game\\\\scenes\\\\Shrine.tscn\" -ItemType File -Force)",
+      "Bash(Out-Null)",
+      "Bash(Write-Output \"created\")",
+      "PowerShell(New-Item *)",
+      "mcp__ide__getDiagnostics",
+      "Bash(curl -s --max-time 3 http://127.0.0.1:8000/mcp)",
+      "Bash(echo \"exit: $?\")",
+      "Skill(update-config)",
+      "Bash(claude mcp *)"
     ]
   }
 }

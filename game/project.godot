@@ -19,3 +19,9 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 EventBus="*res://autoloads/EventBus.gd"
 GodStats="*res://autoloads/GodStats.gd"
 DayClock="*res://autoloads/DayClock.gd"
+EnemySpawner="*res://autoloads/EnemySpawner.gd"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")

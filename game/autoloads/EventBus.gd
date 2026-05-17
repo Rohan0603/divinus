@@ -1,11 +1,36 @@
-## EventBus — global message broker.
-## All game systems emit here; listeners connect here.
-## Never store state: this is pure signal relay.
+# EventBus: Central event hub for all game systems
+# All communication between game systems flows through signals defined here
+# Autoload this as "EventBus" in project settings
 extends Node
 
-signal boon_cast(boon_type: String)       # a divine power was used
-signal npc_converted(npc: Node)           # NPC entered Follower state
-signal shrine_built(position: Vector2)    # player placed a shrine
-signal enemy_killed(enemy: Node)          # enemy was defeated
-signal day_changed(day: int)              # DayClock ticked over
-signal wave_started(wave_num: int)        # enemy wave began
+# === Game Events ===
+
+# Emitted when god casts a boon at a position
+signal boon_cast(boon_data: Dictionary, position: Vector2)
+
+# Emitted when an NPC converts to a follower
+signal npc_converted(npc: Node)
+
+# Emitted when a shrine is built
+signal shrine_built(shrine: Node)
+
+# Emitted when an enemy is defeated
+signal enemy_killed(enemy: Node)
+
+# Emitted when the day cycle advances
+signal day_changed(day_number: int)
+
+# Emitted 30 seconds before the day ends — triggers enemy waves
+signal day_ending(day_number: int)
+
+# Emitted when an enemy wave starts
+signal wave_started(wave_config: Dictionary)
+
+# Emitted when followers reach a multiple of 5 — triggers shrine spawn
+signal shrine_unlocked()
+
+# Emitted when a shrine construction site is placed at a world position
+signal shrine_site_placed(site_position: Vector2)
+
+# Emitted when an NPC is assigned a civilization role
+signal npc_role_assigned(npc: Node, role: String)
