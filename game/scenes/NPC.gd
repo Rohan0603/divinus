@@ -45,6 +45,7 @@ func _ready() -> void:
 	sprite.color = ROLE_COLORS["Unaware"]
 	_pick_wander_target()
 	EventBus.boon_cast.connect(_on_boon_cast)
+	EventBus.rival_boon_cast.connect(_on_rival_boon_cast)
 
 func _physics_process(delta: float) -> void:
 	match current_state:
@@ -380,3 +381,18 @@ func _find_nearest_enemy() -> Node:
 func _on_boon_cast(_boon_data: Dictionary, pos: Vector2) -> void:
 	if current_state == "Unaware" and global_position.distance_to(pos) <= BOON_RADIUS:
 		witness_miracle()
+
+func _on_rival_boon_cast(boon_data: Dictionary, position: Vector2) -> void:
+	if current_state == "Unaware":
+		var distance = global_position.distance_to(position)
+		if distance <= 200.0:
+			# Convert to rival instead of player
+			_become_rival_follower(boon_data.get("rival_id", 0))
+
+func _become_rival_follower(rival_id: int) -> void:
+	current_state = "Follower"
+	role = ""  # Rival followers don't have roles yet
+	GodStats.add_rival_follower()
+	# Change color to indicate rival (e.g., cyan)
+	modulate = Color.CYAN
+	print("NPC converted to rival follower")
