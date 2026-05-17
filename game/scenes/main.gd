@@ -100,13 +100,18 @@ func _populate_terrain() -> void:
 	var tileset = TileSet.new()
 	tileset.tile_size = Vector2i(32, 32)
 
-	# Load the texture
-	var grass_texture = load("res://resources/grass.png")
-	print("[DEBUG] Grass texture loaded: ", grass_texture)
+	# Create simple test textures programmatically
+	var grass_image = Image.new()
+	grass_image.create(32, 32, false, Image.FORMAT_RGB8)
+	grass_image.fill(Color.GREEN)
+	var grass_texture = ImageTexture.create_from_image(grass_image)
+	print("[DEBUG] Grass texture created (green): ", grass_texture)
 
-	if grass_texture == null:
-		push_error("Failed to load grass.png")
-		return
+	var dirt_image = Image.new()
+	dirt_image.create(32, 32, false, Image.FORMAT_RGB8)
+	dirt_image.fill(Color.BROWN)
+	var dirt_texture = ImageTexture.create_from_image(dirt_image)
+	print("[DEBUG] Dirt texture created (brown): ", dirt_texture)
 
 	# Create TileSetAtlasSource for grass tiles
 	var grass_source = TileSetAtlasSource.new()
@@ -117,7 +122,7 @@ func _populate_terrain() -> void:
 
 	# Create TileSetAtlasSource for dirt tiles
 	var dirt_source = TileSetAtlasSource.new()
-	dirt_source.texture = grass_texture
+	dirt_source.texture = dirt_texture
 	dirt_source.texture_region_size = Vector2i(32, 32)
 	dirt_source.create_tile(Vector2i(0, 0))
 	print("[DEBUG] Dirt source tiles: ", dirt_source.get_tiles_count())
