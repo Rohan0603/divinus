@@ -218,7 +218,7 @@ divinus/
 │   ├── project.godot ................... Project config
 │   ├── autoloads/ ...................... Global singletons
 │   ├── scenes/ ......................... Game scenes
-│   └── scripts/ ........................ Scene logic
+│   └── (scripts co-located in scenes/)
 │
 └── backend/
     ├── README.md ....................... Backend setup
@@ -279,14 +279,14 @@ divinus/
 
 | Document | Status | Last Updated | Completeness |
 |----------|--------|--------------|-------------|
-| README.md | ✅ Updated | 2026-05-16 | 100% |
-| divinus_gdd.md | ✅ Complete | 2026-05-16 | 100% |
-| ARCHITECTURE.md | ✅ New | 2026-05-16 | 100% |
-| TESTING.md | ✅ New | 2026-05-16 | 100% |
-| DEVELOPMENT.md | ✅ New | 2026-05-16 | 100% |
-| DOCS_INDEX.md | ✅ New | 2026-05-16 | 100% |
-| game/CLAUDE.md | ✅ Updated | 2026-05-16 | 95% |
-| game/GODOT_SETUP.md | ✅ Complete | 2026-05-16 | 100% |
+| README.md | ✅ Updated | 2026-05-17 | 100% |
+| divinus_gdd.md | ✅ Updated | 2026-05-17 | 100% |
+| ARCHITECTURE.md | ✅ Updated | 2026-05-17 | 100% |
+| TESTING.md | ✅ Updated | 2026-05-17 | 100% |
+| DEVELOPMENT.md | ✅ Updated | 2026-05-17 | 100% |
+| DOCS_INDEX.md | ✅ Updated | 2026-05-17 | 100% |
+| game/CLAUDE.md | ✅ Current | 2026-05-17 | 100% |
+| game/GODOT_SETUP.md | ✅ Updated | 2026-05-17 | 100% |
 | backend/README.md | ✅ Complete | 2026-05-16 | 100% |
 
 ---
@@ -366,7 +366,7 @@ A: game/CLAUDE.md (GDScript) + DEVELOPMENT.md (Python) + backend/README.md (API 
 ## 📞 Maintenance
 
 **Owner:** Gokul Kushalappa  
-**Last Reviewed:** 2026-05-16  
+**Last Reviewed:** 2026-05-17  
 **Review Frequency:** Quarterly or on major changes  
 
 ### Deprecation Policy

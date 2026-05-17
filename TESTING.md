@@ -215,8 +215,8 @@ Game ready
 #### Test 1: NPC Spawning & Wandering
 1. Launch game in Godot editor
 2. Click **Play** (F5)
-3. **Expected:** 5 green NPCs spawn at center
-4. NPCs should walk to random positions
+3. **Expected:** 6 blue NPCs spawn at random positions across the map
+4. NPCs should walk to random positions, idle briefly, then pick new targets
 5. No errors in console
 
 **Verify in Debugger Console:**
@@ -226,47 +226,35 @@ get_tree().get_first_child_in_group("npc").position
 
 #### Test 2: HUD Display
 1. Check HUD shows:
+   - Divine Power (starts at 20.0 / 100.0)
    - Follower count (starts at 0)
-   - Energy bar (starts at max)
-   - Current day (starts at 1)
-   - Time remaining in day (countdown from 180s)
+   - Level (starts at 1)
+   - Day and time remaining (countdown from 3:00)
 
 **Verify:**
 ```gdscript
 print(GodStats.followers)
-print(GodStats.energy)
-print(GodStats.max_energy)
+print(GodStats.divine_power)
+print(GodStats.max_divine_power)
 ```
 
-#### Test 3: Autoload Signals
-1. Open Debugger Console
-2. Run:
-```gdscript
-# Should print "1 follower"
-GodStats.followers = 1
-# Should trigger "level up" if threshold met
-GodStats.followers = 10
-```
+#### Test 3: Boon Casting
+1. Left-click anywhere in the game world
+2. **Expected:** A faint gold ring appears at the cursor position (costs 5 DP)
+3. Nearby blue NPCs (within 200px) should turn yellow (Witness state)
+4. Watch the Divine Power label drop by 5 each click
 
-#### Test 4: Day Cycle
-1. Watch HUD countdown from 180 → 0
-2. Day should increment (1 → 2 → 3...)
-3. Repeat every 180 seconds
+#### Test 4: NPC Conversion
+1. Cast boons near NPCs until they turn yellow
+2. Wait ~3–4 seconds for faith to fill
+3. **Expected:** First NPC turns gold (Head Preacher), subsequent ones get colored roles
+4. Follower count in HUD increments
 
-**Speed up for testing:**
-```gdscript
-# In DayClock.gd, temporarily change:
-DAY_LENGTH = 10  # 10 seconds per day instead of 180
-```
-
-#### Test 5: Event Bus Communication
-1. Emit signal from console:
-```gdscript
-EventBus.boon_cast.emit(Vector2(100, 100), "heal", 100)
-```
-
-2. HUD should react (visual feedback)
-3. Check console for signal emission log
+#### Test 5: Day Cycle & Enemy Raids
+1. Watch HUD countdown from 3:00 toward 0:30
+2. At 0:30 remaining: red enemies should spawn from map edges
+3. At 0:00: day number increments, remaining enemies exit
+4. **Speed up for testing** — temporarily set `_timer.wait_time = 20.0` and `_warning_timer.wait_time = 10.0` in DayClock.gd
 
 ---
 

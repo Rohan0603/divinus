@@ -1,15 +1,25 @@
-# Documentation Updates — May 16, 2026
+# Documentation Updates — May 17, 2026
 
 Summary of all documentation changes, additions, and improvements.
 
 ---
 
-## 📋 Summary
+## 📋 Summary (May 17 update — sync with implemented code)
 
 **Total Files:** 9 documentation files  
-**New Files:** 5  
-**Updated Files:** 2  
+**Updated Files (May 17):** 7  
 **Status:** ✅ Complete
+
+### May 17 Changes
+- `energy`/`max_energy`/`energy_changed` renamed to `divine_power`/`max_divine_power`/`divine_power_changed` everywhere
+- GodStats: added `shrines_built`, `shrine_sites_pending`, `role_counts`; removed non-existent `is_game_over`
+- EventBus: fixed `boon_cast` signature; added `day_ending`, `shrine_unlocked`, `shrine_site_placed`, `npc_role_assigned`
+- NPC: expanded from 3 to 8 states (Unaware/Witness/HeadPreacher/Builder/Gatherer/Farmer/Defender/Scholar)
+- DayClock: corrected to Timer-based (not `_process`); removed non-existent `time_in_day`/`total_elapsed`
+- File structure: removed non-existent `scripts/` folder; scripts live in `scenes/`
+- Build phases: updated to reflect MVP is now 11/12 complete
+
+---
 
 ---
 
@@ -228,9 +238,9 @@ Summary of all documentation changes, additions, and improvements.
 
 ### Project Status
 - **Backend:** ✅ Fully functional and tested
-- **Frontend:** ⏳ In Phase 3 (NPC spawning working)
-- **Documentation:** ✅ Comprehensive and up-to-date
-- **Testing:** ✅ Backend fully tested, frontend ready for testing
+- **Frontend:** ✅ 11/12 MVP phases complete (TileMap + win screen remaining)
+- **Documentation:** ✅ Comprehensive and up-to-date (synced May 17)
+- **Testing:** ✅ Backend fully tested, frontend bootable with no errors
 
 ---
 
@@ -418,6 +428,6 @@ Refer to **DOCS_INDEX.md** for the document that covers your question.
 
 **Documentation Update Complete ✅**
 
-**Date:** 2026-05-16  
+**Date:** 2026-05-17  
 **Maintainer:** Gokul Kushalappa  
-**Next Review:** 2026-06-16 (1 month)
+**Next Review:** 2026-06-17 (1 month)

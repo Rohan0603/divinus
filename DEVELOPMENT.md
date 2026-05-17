@@ -59,20 +59,20 @@ ollama pull phi3:mini
 
 ```
 game/
-├── autoloads/              # Global singletons (read-only after Phase 1)
-│   ├── GodStats.gd
-│   ├── EventBus.gd
-│   └── DayClock.gd
-├── scenes/                 # Root scenes
-│   ├── Main.tscn           # World + game loop
-│   ├── NPC.tscn            # NPC entity
-│   └── HUD.tscn            # UI layer
-├── scripts/                # Scene scripts
-│   ├── main.gd
-│   ├── npc.gd
-│   └── hud.gd
+├── autoloads/              # Global singletons
+│   ├── GodStats.gd         # followers, divine_power, shrine tracking, role_counts
+│   ├── EventBus.gd         # all signals
+│   ├── DayClock.gd         # 180s day timer + 150s raid warning
+│   └── EnemySpawner.gd     # WAVE_TABLE, spawns bandits on day_ending
+├── scenes/                 # Scenes and their co-located scripts
+│   ├── Main.tscn + main.gd
+│   ├── NPC.tscn + NPC.gd
+│   ├── HUD.tscn + HUD.gd
+│   ├── Shrine.tscn + Shrine.gd
+│   ├── ShrineConstructionSite.tscn + ShrineConstructionSite.gd
+│   ├── Boon.tscn + boon.gd
+│   └── Enemy.tscn + enemy.gd
 └── resources/              # Data resources (future)
-    └── boons/              # BoonData.tres files
 ```
 
 ### Coding Standards
@@ -178,20 +178,21 @@ var followers = get_tree().get_nodes_in_group("follower")
 
 ### Phase Structure
 
-**Phase 1-2 (Complete):**
-- Autoloads (GodStats, EventBus, DayClock)
-- Basic scene structure
+**Phases 1, 3–13 (Complete):**
+- Autoloads: GodStats, EventBus, DayClock, EnemySpawner
+- NPC wandering, boon casting, conversion, 8-state role system + skill progression
+- Shrine construction pipeline (sites → builders → built shrines)
+- HUD (divine power, followers, level, day/time)
+- Head Preacher auto-conversion
+- Enemy raids (WAVE_TABLE, day_ending trigger)
+- Game over condition (followers == 0)
 
-**Phase 3-5 (Current):**
-- NPC spawning + state machine
-- Click-to-cast boon
-- NPC conversion + faith system
+**Phase 2 (Pending):**
+- TileMap world (currently a ColorRect placeholder)
 
-**Phase 6-10:**
-- Shrine generation
-- HUD display
-- Enemy waves
-- Win/fail conditions
+**Phases 14–15 (Pending):**
+- Win condition (survive day 15)
+- Rival god agents (post-MVP)
 
 ### Code Review Checklist
 
@@ -600,5 +601,5 @@ ollama serve
 
 ---
 
-**Last Updated:** 2026-05-16  
+**Last Updated:** 2026-05-17  
 **Maintainer:** Gokul Kushalappa

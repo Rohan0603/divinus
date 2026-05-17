@@ -5,22 +5,22 @@
 extends CanvasLayer
 
 # Label references
-@onready var energy_label: Label = $VBoxContainer/EnergyLabel
+@onready var energy_label: Label = $VBoxContainer/DivinePowerLabel
 @onready var followers_label: Label = $VBoxContainer/FollowersLabel
 @onready var level_label: Label = $VBoxContainer/LevelLabel
 @onready var day_label: Label = $VBoxContainer/DayLabel
 
 func _ready() -> void:
 	# Connect to GodStats signals
-	GodStats.energy_changed.connect(_on_energy_changed)
+	GodStats.divine_power_changed.connect(_on_energy_changed)
 	GodStats.followers_changed.connect(_on_followers_changed)
 	GodStats.level_up.connect(_on_level_up)
-	
+
 	# Connect to EventBus day change signal
 	EventBus.day_changed.connect(_on_day_changed)
-	
+
 	# Initialize labels with current values
-	_on_energy_changed(GodStats.energy)
+	_on_energy_changed(GodStats.divine_power)
 	_on_followers_changed(GodStats.followers)
 	_on_level_up(GodStats.god_level)
 	_on_day_changed(DayClock.current_day)
@@ -36,7 +36,7 @@ func _process(delta: float) -> void:
 
 # Called when energy changes
 func _on_energy_changed(new_energy: float) -> void:
-	energy_label.text = "Energy: %.1f / %.1f" % [new_energy, GodStats.max_energy]
+	energy_label.text = "Energy: %.1f / %.1f" % [new_energy, GodStats.max_divine_power]
 
 # Called when followers count changes
 func _on_followers_changed(new_count: int) -> void:

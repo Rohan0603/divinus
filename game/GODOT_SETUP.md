@@ -106,13 +106,14 @@ code --install-extension Aaron-Bond.better-comments
 ### Testing in Godot Console
 ```gdscript
 # Test NPC conversion
-get_tree().get_first_child_in_group("npc").witness_miracle()
+get_tree().get_first_child_in_group("npcs").witness_miracle()
 
 # Test follower count
 print(GodStats.followers)
 
-# Test energy system
-GodStats.energy -= 10
+# Test divine power system
+GodStats.add_divine_power(-10.0)
+print(GodStats.divine_power)
 ```
 
 ---

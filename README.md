@@ -18,14 +18,14 @@ divinus/
 │   │   ├── GodStats.gd             # God variables + signals
 │   │   ├── EventBus.gd             # Global signal hub
 │   │   └── DayClock.gd             # Day/night cycle (180s = 1 day)
-│   ├── scenes/                     # Root scenes
-│   │   ├── Main.tscn               # World root + game loop
-│   │   ├── NPC.tscn                # NPC with state machine
-│   │   └── HUD.tscn                # UI (energy, followers, day)
-│   └── scripts/                    # Scene logic
-│       ├── main.gd                 # Main loop, NPC spawning
-│       ├── npc.gd                  # NPC state machine (Unaware/Witness/Follower)
-│       └── hud.gd                  # UI updates from signals
+│   └── scenes/                     # Scenes + co-located scripts
+│       ├── Main.tscn + main.gd     # World root + game loop
+│       ├── NPC.tscn + NPC.gd       # 8-state NPC (roles + skill system)
+│       ├── HUD.tscn + HUD.gd       # UI (divine power, followers, level, day)
+│       ├── Shrine.tscn + Shrine.gd
+│       ├── ShrineConstructionSite.tscn + ShrineConstructionSite.gd
+│       ├── Boon.tscn + boon.gd
+│       └── Enemy.tscn + enemy.gd
 │
 ├── backend/                        # FastAPI NPC dialogue engine
 │   ├── main.py                     # FastAPI app + endpoints
@@ -145,10 +145,15 @@ print(GodStats.followers)
 ## ⚙️ Key Systems
 
 ### NPCs (State Machine)
-Each NPC cycles through states:
-- **Unaware** — Wander randomly
-- **Witness** — Freeze for 3s when miracle is cast
-- **Follower** — Walk to shrine + increase worship
+Each NPC cycles through states/roles:
+- **Unaware** (blue) — Wander randomly
+- **Witness** (yellow) — Stationary; faith accumulates 3/s; converts at 10
+- **HeadPreacher** (gold) — Hunts Unaware NPCs, triggers `witness_miracle()`
+- **Builder** (orange) — Walks to ShrineConstructionSite
+- **Gatherer** (teal) — Wanders randomly; 3 DP / 5s
+- **Farmer** (yellow-green) — Orbits nearest shrine; 4 DP / 5s
+- **Defender** (red) — Chases enemies; pushes them off the map
+- **Scholar** (deep purple) — Drifts near shrines; 2.5 DP / 5s
 
 ### Boons (Divine Abilities)
 - **Heal** — Restore NPC health (Level 1)
@@ -161,7 +166,7 @@ Each NPC cycles through states:
 ### God Progression
 - **Followers = XP** — Convert NPCs to increase level
 - **Levels unlock boons** — New abilities at each tier
-- **Max Energy grows** — More shrine output at higher levels
+- **Skill system** — Income roles level up to 2× output over time
 
 ### Day/Night Cycle
 - **1 in-game day = 180 real seconds**
@@ -187,11 +192,18 @@ Each NPC cycles through states:
 | CORS headers | ✅ Pass | — |
 
 ### Frontend Status
-- ✅ Autoloads (GodStats, EventBus, DayClock) implemented
-- ✅ NPC spawning + wandering working
-- ⏳ Boon casting (in progress)
-- ⏳ Shrine system (not started)
-- ⏳ Enemy waves (not started)
+- ✅ Autoloads (GodStats, EventBus, DayClock, EnemySpawner)
+- ✅ NPC spawning + wandering
+- ✅ Boon casting (left-click, costs 5 DP)
+- ✅ NPC conversion (8-state role system + skill progression)
+- ✅ Head Preacher auto-conversion
+- ✅ Shrine construction pipeline (3 builders × 5s)
+- ✅ Shrine divine power generation (10 DP / 5s)
+- ✅ HUD (divine power, followers, level, day/time)
+- ✅ Enemy raids (WAVE_TABLE, day_ending trigger)
+- ✅ Game over condition (followers == 0)
+- ⬜ TileMap world (ColorRect placeholder)
+- ⬜ Win condition (survive day 15)
 
 ---
 
@@ -233,16 +245,18 @@ To use real LLM dialogue:
 
 ## 🎯 Build Phases (Recommended Order)
 
-**Phase 1:** ✅ Autoloads (GodStats, EventBus, DayClock)  
-**Phase 2:** TileMap world  
-**Phase 3:** NPC wandering  
-**Phase 4:** Click-to-cast boon + radius detection  
-**Phase 5:** NPC conversion + faith system  
-**Phase 6:** Shrine spawning + energy generation  
-**Phase 7:** HUD (bars, counters, day display)  
-**Phase 8:** Level-up & boon unlock  
-**Phase 9:** Enemy spawner + waves  
-**Phase 10:** Win/fail conditions + screens  
+**Phase 1:** ✅ Autoloads (GodStats, EventBus, DayClock, EnemySpawner)  
+**Phase 2:** ⬜ TileMap world (ColorRect placeholder)  
+**Phase 3:** ✅ NPC wandering  
+**Phase 4:** ✅ Click-to-cast boon + radius detection  
+**Phase 5:** ✅ NPC conversion + 8-state role system + skill progression  
+**Phase 6:** ✅ Shrine construction pipeline (3 builders × 5s)  
+**Phase 7:** ✅ Shrine divine power generation (10 DP / 5s)  
+**Phase 8:** ✅ HUD (divine power, followers, level, day/time)  
+**Phase 9:** ✅ Head Preacher auto-conversion  
+**Phase 10:** ✅ Enemy raids (WAVE_TABLE, day_ending trigger)  
+**Phase 11:** ✅ Game over condition (followers == 0)  
+**Phase 12:** ⬜ Win condition (survive day 15)  
 
 ---
 
@@ -271,5 +285,5 @@ To use real LLM dialogue:
 
 ---
 
-**Status:** In Development · MVP Phase 3/10  
-**Last Updated:** 2026-05-16
+**Status:** In Development · MVP Phase 11/12 (TileMap + win screen remaining)  
+**Last Updated:** 2026-05-17

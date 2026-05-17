@@ -39,15 +39,17 @@ System design, data flow, and integration patterns.
 Purpose: Centralized god power state
 ├── Variables:
 │   ├── followers: int (0+)
-│   ├── energy: float (0-max_energy)
-│   ├── max_energy: float (grows with level)
+│   ├── divine_power: float (0–max_divine_power)
+│   ├── max_divine_power: float (100 at MVP)
 │   ├── god_level: int (1-6)
 │   ├── xp_thresholds: Array[int]
-│   └── is_game_over: bool
+│   ├── shrines_built: int
+│   ├── shrine_sites_pending: int
+│   └── role_counts: Dictionary  # Builder/Gatherer/Farmer/Defender/Scholar
 └── Signals:
-    ├── followers_changed(new_count)
-    ├── energy_changed(new_value)
-    ├── level_up(new_level)
+    ├── followers_changed(new_count: int)
+    ├── divine_power_changed(new_value: float)
+    ├── level_up(new_level: int)
     └── game_over()
 ```
 
@@ -55,28 +57,29 @@ Purpose: Centralized god power state
 ```
 Purpose: Global signal hub for all systems
 ├── Signals:
-│   ├── boon_cast(position: Vector2, boon_type: String, radius: float)
+│   ├── boon_cast(boon_data: Dictionary, position: Vector2)
 │   ├── npc_converted(npc: Node)
-│   ├── shrine_built(position: Vector2)
+│   ├── shrine_built(shrine: Node)
 │   ├── enemy_killed(enemy: Node)
 │   ├── day_changed(day_number: int)
-│   └── wave_started(wave_data: Dictionary)
+│   ├── day_ending(day_number: int)       # 30s before day end — triggers raids
+│   ├── wave_started(wave_config: Dictionary)
+│   ├── shrine_unlocked()                  # every 5 followers
+│   ├── shrine_site_placed(site_position: Vector2)
+│   └── npc_role_assigned(npc: Node, role: String)
 └── Pattern: Any system emits here, all listeners respond
 ```
 
 **DayClock.gd**
 ```
 Purpose: Time management and day progression
-├── Settings:
-│   └── DAY_LENGTH = 180 (real seconds)
 ├── Variables:
-│   ├── current_day: int (1-15)
-│   ├── time_in_day: float (0-180)
-│   └── total_elapsed: float
+│   └── current_day: int (1-15)
 └── Behavior:
-    ├── Updates each frame: _process(delta)
-    ├── Emits day_changed signal when time_in_day resets
-    └── Resets time_in_day, increments current_day
+    ├── Two internal Timers (180s day, 150s warning)
+    ├── 150s → day_ending.emit(current_day)   [triggers enemy raids]
+    ├── 180s → current_day++, day_changed.emit(current_day)
+    └── get_time_remaining() → _timer.time_left
 ```
 
 ### Scene Hierarchy
@@ -84,104 +87,90 @@ Purpose: Time management and day progression
 ```
 game/
 ├── Main.tscn (Node2D)
-│   ├── NPCs (spawned dynamically)
-│   │   └── NPC.tscn (CharacterBody2D) x5
-│   │       ├── State Machine
-│   │       │   ├── Unaware (wander)
-│   │       │   ├── Witness (pause, gain faith)
-│   │       │   └── Follower (walk to shrine)
-│   │       ├── Position tracking
-│   │       └── Faith counter
-│   ├── TileMap (visual only, future)
-│   └── Shrines (spawned when NPCs convert)
-│       └── Shrine.tscn (Area2D)
-│           ├── Energy generator (Timer)
-│           └── Visual representation
-│
-└── HUD (CanvasLayer)
-    ├── Energy Bar (ProgressBar) → watches GodStats.energy_changed
-    ├── Follower Counter (Label) → watches GodStats.followers_changed
-    ├── Day Display (Label) → watches DayClock.current_day
-    └── Time Remaining (ProgressBar) → watches DayClock.time_in_day
+│   ├── Background (ColorRect — TileMap placeholder)
+│   ├── TileMap (empty, future)
+│   ├── UI (CanvasLayer)
+│   │   └── HUD.tscn (CanvasLayer)
+│   │       └── VBoxContainer
+│   │           ├── DivinePowerLabel → watches GodStats.divine_power_changed
+│   │           ├── FollowersLabel   → watches GodStats.followers_changed
+│   │           ├── LevelLabel       → watches GodStats.level_up
+│   │           └── DayLabel         → updated in _process via DayClock.get_time_remaining()
+│   ├── NPC.tscn (CharacterBody2D) ×6 — spawned in _ready
+│   │   ├── Polygon2D (shape + color encodes role)
+│   │   └── match current_state → 8 states:
+│   │       Unaware | Witness | HeadPreacher | Builder
+│   │       Gatherer | Farmer | Defender | Scholar
+│   ├── ShrineConstructionSite.tscn — spawned every 5 followers
+│   │   └── 3 builders × 5s → shrine_completed.emit()
+│   ├── Shrine.tscn (StaticBody2D) — spawned on shrine_completed
+│   │   └── Timer 5s → GodStats.add_divine_power(10)
+│   ├── Boon.tscn (Area2D) — spawned on left-click (costs 5 DP)
+│   │   └── EventBus.boon_cast.emit({}, position)
+│   └── Enemy.tscn (CharacterBody2D) — spawned by EnemySpawner on day_ending
+│       └── hunts nearest follower → take_damage() on contact → start_exit()
 ```
 
 ### Signal Flow Diagram
 
 ```
-Player Clicks (Input)
-    ↓
-Main.gd → Validates energy, calculates boon effect
-    ↓
-EventBus.boon_cast.emit(position, "heal", 100)
-    ├─→ NPC.gd (all NPCs listening):
-    │   └─→ If within radius:
-    │       ├─→ witness_miracle() called
-    │       ├─→ Request dialogue from backend
-    │       └─→ Apply faith gain
-    │
-    └─→ Shrine.gd, HUD.gd, Enemy.gd (other listeners)
-        └─→ React to boon cast
+Left-click → main.gd._input → spend 5 DP → Boon.tscn instantiated
+  └─ boon.gd._ready → EventBus.boon_cast.emit({}, position)
+       └─ NPC._on_boon_cast → witness_miracle() [if Unaware and within 200px]
+            └─ current_state = "Witness" → faith accumulates 3/s
 
-Backend Response (Dialogue)
-    ↓
-NPC.gd receives {"dialogue": "...", "faith_bonus": 15}
-    ↓
-GodStats.followers += 1 (if threshold crossed)
-    ↓
-GodStats.followers_changed.emit(new_count)
-    ↓
-HUD.gd updates label
+NPC faith >= 10 → _become_follower()
+  ├─ GodStats.add_follower()
+  │    ├─ followers_changed.emit()  → HUD updates label
+  │    └─ shrine_unlocked.emit() [every 5 followers]
+  │         └─ main.gd._on_shrine_unlocked → ShrineConstructionSite spawned
+  └─ EventBus.npc_converted.emit(npc)
+       └─ main.gd._on_npc_converted → first one → assign_head_preacher()
+
+3 builders hold ShrineConstructionSite for 5s → shrine_completed.emit()
+  └─ main.gd._on_shrine_completed → Shrine.tscn spawned, GodStats.on_shrine_built()
+
+Shrine._ready → Timer 5s → GodStats.add_divine_power(10)
+  └─ divine_power_changed.emit() → HUD updates DivinePowerLabel
+
+DayClock 150s → day_ending → EnemySpawner → bandits spawn
+DayClock 180s → day_changed → current_day++ → EnemySpawner exits stragglers
+
+GodStats.followers == 0 → game_over.emit() → main.gd prints "Game Over!"
 ```
 
-### State Machine Pattern (NPC)
+### NPC State Machine
+
+The NPC uses a `current_state: String` variable dispatched in `_physics_process` via `match`. Each state maps to a dedicated `_update_<state>(delta)` method.
+
+**States and behaviors:**
+
+| State | Color | Behavior | Income |
+|-------|-------|---------|--------|
+| Unaware | Blue | Random wander | — |
+| Witness | Yellow | Stationary; faith += 3/s; converts at 10 | — |
+| HeadPreacher | Gold | Hunts Unaware NPCs, calls `witness_miracle()` at 32px | — |
+| Builder | Orange | Walks to nearest ShrineConstructionSite | — |
+| Gatherer | Teal | Wanders randomly | 3 DP / 5s |
+| Farmer | Yellow-green | Orbits nearest shrine (40–80px) | 4 DP / 5s |
+| Defender | Red | Chases nearest enemy; calls `start_exit()` at 40px | — |
+| Scholar | Deep purple | Drifts to nearest shrine, stays within 48px | 2.5 DP / 5s |
 
 ```gdscript
-class NPC extends CharacterBody2D:
-    var current_state: BaseState
-    var states: Dictionary = {
-        "unaware": Unaware.new(self),
-        "witness": Witness.new(self),
-        "follower": Follower.new(self)
-    }
-    
-    func transition_to(state_name: String):
-        current_state.exit()
-        current_state = states[state_name]
-        current_state.enter()
-    
-    func _process(delta):
-        current_state.update(delta)
-
-class Unaware extends BaseState:
-    func enter():
-        # Start wandering to random position
-    func update(delta):
-        # Move toward target position
-    func exit():
-        # Stop moving
-
-class Witness extends BaseState:
-    var timer = 3.0  # 3 seconds to convert
-    func enter():
-        # Freeze NPC, show faith popup
-        timer = 3.0
-    func update(delta):
-        timer -= delta
-        if timer <= 0:
-            host.transition_to("follower")
-    func exit():
-        # Hide visual feedback
-
-class Follower extends BaseState:
-    var shrine_target: Node
-    func enter():
-        # Find nearest shrine, set as target
-        GodStats.followers += 1
-    func update(delta):
-        # Move toward shrine
-    func exit():
-        # Increment shrine worship counter
+func _physics_process(delta: float) -> void:
+    match current_state:
+        "Unaware":      _update_unaware(delta)
+        "Witness":      _update_witness(delta)
+        "HeadPreacher": _update_head_preacher(delta)
+        "Builder":      _update_builder(delta)
+        "Gatherer":     _update_gatherer(delta)
+        "Farmer":       _update_farmer(delta)
+        "Defender":     _update_defender(delta)
+        "Scholar":      _update_scholar(delta)
+    move_and_slide()
 ```
+
+**Skill system:** Income roles earn 10 XP per income tick. At 100 XP → level up (max 5). Efficiency = `1.0 + skill_level / 5.0` (1.0× base → 2.0× max).
 
 ---
 
@@ -501,5 +490,5 @@ allow_headers = ["Content-Type"]
 
 ---
 
-**Last Updated:** 2026-05-16  
-**Architecture Version:** 1.0
+**Last Updated:** 2026-05-17  
+**Architecture Version:** 1.1

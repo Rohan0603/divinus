@@ -80,16 +80,19 @@ The player interacts with the world entirely through boons. Click anywhere on th
 | Variable | Type | Purpose |
 |----------|------|---------|
 | `followers` | int | Total active followers — primary XP metric |
-| `energy` | float | Current divine energy available for casting |
-| `max_energy` | float | Cap that grows with god level |
+| `divine_power` | float | Current divine energy available for casting |
+| `max_divine_power` | float | Cap (100 at MVP) |
 | `god_level` | int | Current level (1–6). Gates ability unlocks |
 | `xp_thresholds` | Array[int] | Follower counts needed to reach each level |
+| `shrines_built` | int | Completed shrines — drives Farmer/Scholar quotas |
+| `shrine_sites_pending` | int | Sites placed but not yet built — drives Builder quota |
+| `role_counts` | Dictionary | Per-role population: Builder, Gatherer, Farmer, Defender, Scholar |
 
 **Signals emitted by GodStats:**
 ```
-signal followers_changed(new_count)
-signal energy_changed(new_value)
-signal level_up(new_level)
+signal followers_changed(new_count: int)
+signal divine_power_changed(new_value: float)
+signal level_up(new_level: int)
 signal game_over()
 ```
 
@@ -99,12 +102,16 @@ A dedicated **EventBus.gd** autoload acts as a global signal hub. Systems commun
 
 ```gdscript
 # EventBus.gd — global signal hub
-signal boon_cast(boon_data, position)
-signal npc_converted(npc)
-signal shrine_built(shrine)
-signal enemy_killed(enemy)
-signal day_changed(day_number)
-signal wave_started(wave_config)
+signal boon_cast(boon_data: Dictionary, position: Vector2)
+signal npc_converted(npc: Node)
+signal shrine_built(shrine: Node)
+signal enemy_killed(enemy: Node)
+signal day_changed(day_number: int)
+signal day_ending(day_number: int)      # fires 30s before day end — triggers raids
+signal wave_started(wave_config: Dictionary)
+signal shrine_unlocked()               # fires every 5 followers
+signal shrine_site_placed(site_position: Vector2)
+signal npc_role_assigned(npc: Node, role: String)
 ```
 
 > **Scalability note:** Any new system (quests, achievements, analytics) subscribes to EventBus signals without touching existing code.
@@ -156,18 +163,17 @@ Enemies actively hunt the **nearest follower or shrine** — they don't wander r
 
 | Scene File | Root Node | Script | Responsibility |
 |------------|-----------|--------|----------------|
-| `Main.tscn` | Node2D | `main.gd` | Game loop, spawns NPCs, holds TileMap world |
-| `NPC.tscn` | CharacterBody2D | `npc.gd` | StateChart: unaware / witness / follower |
-| `Shrine.tscn` | StaticBody2D | `shrine.gd` | Timer → add energy to GodStats |
-| `Boon.tscn` | Area2D | `boon.gd` | Spawned at cursor, detects NPCs, self-destructs |
-| `Enemy.tscn` | CharacterBody2D | `enemy.gd` | Hunts nearest follower/shrine, reduces faith |
-| `RivalAgent.tscn` | CharacterBody2D | `rival_agent.gd` | Stronger enemy — targets shrines directly |
-| `HUD.tscn` | CanvasLayer | `hud.gd` | Energy bar, follower count, level badge, day counter |
+| `Main.tscn` | Node2D | `main.gd` | Game loop, spawns 6 NPCs, handles boon casting and shrine placement |
+| `NPC.tscn` | CharacterBody2D | `NPC.gd` | 8 states: Unaware, Witness, HeadPreacher, Builder, Gatherer, Farmer, Defender, Scholar |
+| `ShrineConstructionSite.tscn` | Node2D | `ShrineConstructionSite.gd` | Yellow placeholder — needs 3 builders for 5s to complete |
+| `Shrine.tscn` | StaticBody2D | `Shrine.gd` | Timer → add 10 divine_power every 5s |
+| `Boon.tscn` | Area2D | `boon.gd` | Spawned at cursor, emits EventBus.boon_cast, fades out |
+| `Enemy.tscn` | CharacterBody2D | `enemy.gd` | Hunts nearest follower, deals damage on contact, then exits |
+| `HUD.tscn` | CanvasLayer | `HUD.gd` | Divine power label, follower count, level, day timer |
 | `GodStats.gd` | Autoload | — | All god variables + signals |
 | `EventBus.gd` | Autoload | — | Global signal hub |
-| `DayClock.gd` | Autoload | — | Day timer, emits day_changed signal |
-| `BoonRegistry.gd` | Autoload | — | Holds all BoonData resources |
-| `EnemySpawner.gd` | Autoload | — | Reads WAVE_TABLE, spawns enemies on day_changed |
+| `DayClock.gd` | Autoload | — | 180s day timer, emits day_changed + day_ending (30s warning) |
+| `EnemySpawner.gd` | Autoload | — | Reads WAVE_TABLE, spawns bandits on day_ending |
 
 ---
 
@@ -175,21 +181,23 @@ Enemies actively hunt the **nearest follower or shrine** — they don't wander r
 
 Do not skip ahead. Each phase builds on the last. Playable from Phase 4.
 
-| Phase | Task | What You Are Building |
-|-------|------|-----------------------|
-| **1** | GodStats + EventBus + DayClock autoloads | Core singletons. ~60 lines total. Nothing else works without these. |
-| **2** | TileMap world | Small grass/dirt map. Visual only. |
-| **3** | NPC wandering | CharacterBody2D picks random point, walks to it. Movement only. |
-| **4** | Click-to-cast boon | Mouse click spawns Boon.tscn. Area2D detects NPCs. Faith added. **PLAYABLE.** |
-| **5** | NPC conversion | Faith threshold → change sprite, walk to shrine spot, spawn Shrine.tscn. |
-| **6** | Shrine + energy | Shrine Timer fires every N seconds, calls GodStats.add_energy(). |
-| **7** | HUD | CanvasLayer with Labels reacting to GodStats signals. Energy bar, follower count, level badge, day counter. |
-| **8** | Level-up & unlock | Followers cross threshold → god_level++, emit level_up, unlock next boon via BoonRegistry. |
-| **9** | DayClock + day counter | Real-time day cycle (3 min). HUD shows current day and time remaining. |
-| **10** | Enemy spawner | EnemySpawner reads WAVE_TABLE on day_changed. Bandits hunt nearest follower. |
-| **11** | Game over condition | followers == 0 → GodStats emits game_over(). Main.gd shows game over screen. |
-| **12** | Win condition | Day 15 survived → win screen. |
-| **13** | Rival god agents | RivalAgent.tscn spawns from Day 6. Targets shrines directly. |
+| Phase | Status | Task |
+|-------|--------|------|
+| **1** | ✅ Done | GodStats + EventBus + DayClock + EnemySpawner autoloads |
+| **2** | ⬜ Pending | TileMap world (currently a ColorRect placeholder) |
+| **3** | ✅ Done | NPC wandering — CharacterBody2D + random wander targets |
+| **4** | ✅ Done | Click-to-cast boon — costs 5 DP, Area2D radius 200px. **PLAYABLE.** |
+| **5** | ✅ Done | NPC conversion — faith threshold → role assignment → colored Polygon2D |
+| **6** | ✅ Done | Shrine construction — 3 builders × 5s → Shrine.tscn |
+| **7** | ✅ Done | Shrine + divine power — Timer → `GodStats.add_divine_power(10)` every 5s |
+| **8** | ✅ Done | HUD — Labels react to GodStats signals; day timer in `_process` |
+| **9** | ✅ Done | Head Preacher — first follower auto-converts Unaware NPCs |
+| **10** | ✅ Done | Role system — 5 roles with skill progression (up to 2× income) |
+| **11** | ✅ Done | DayClock + day counter — 180s day, HUD shows day and time remaining |
+| **12** | ✅ Done | Enemy spawner — WAVE_TABLE, bandits spawn on day_ending |
+| **13** | ✅ Done | Game over — followers == 0 → game_over signal |
+| **14** | ⬜ Pending | Win condition — survive day 15 → win screen |
+| **15** | ⬜ Pending | Rival god agents — post-MVP |
 
 ---
 

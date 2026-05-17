@@ -29,7 +29,10 @@
       "Bash(claude mcp *)",
       "mcp__godot-ai__editor_state",
       "PowerShell(jq *)",
-      "PowerShell($json = Get-Content \"C:\\\\project!!\\\\divinus\\\\.claude\\\\settings.local.json\" -Raw | ConvertFrom-Json; $json.hooks.SessionStart[0].hooks[0].command)"
+      "PowerShell($json = Get-Content \"C:\\\\project!!\\\\divinus\\\\.claude\\\\settings.local.json\" -Raw | ConvertFrom-Json; $json.hooks.SessionStart[0].hooks[0].command)",
+      "mcp__godot-ai__logs_read",
+      "mcp__godot-ai__project_run",
+      "mcp__godot-ai__project_manage"
     ]
   },
   "hooks": {
