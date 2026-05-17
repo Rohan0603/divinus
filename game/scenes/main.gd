@@ -27,6 +27,7 @@ func _ready() -> void:
 	EventBus.day_won.connect(_on_day_won)
 	GodStats.game_over.connect(_on_game_over)
 	_populate_terrain()
+	_spawn_dungeon_props()      # dungeon decorations
 	RivalSpawner.set_world_root(self)
 	_spawn_npcs()
 
@@ -139,3 +140,46 @@ func _populate_terrain() -> void:
 			else:
 				source_id = 0  # dirtTiles (main dungeon floor)
 			tilemap.set_cell(0, Vector2i(i, j), source_id, Vector2i(0, 0))
+
+func _spawn_dungeon_props() -> void:
+	const PROP_SCALE := Vector2(0.18, 0.18)
+	const PROP_TEXTURES := [
+		"res://Angle/barrel_S.png",
+		"res://Angle/barrelsStacked_S.png",
+		"res://Angle/chestClosed_S.png",
+		"res://Angle/stoneColumn_S.png",
+		"res://Angle/stoneColumnWood_S.png",
+	]
+	const NUM_PROPS := 22
+	const MIN_DIST := 60.0
+
+	var placed: Array[Vector2] = []
+
+	for _i in range(NUM_PROPS):
+		var tex_path := PROP_TEXTURES[randi() % PROP_TEXTURES.size()]
+		var tex := load(tex_path) as Texture2D
+		if tex == null:
+			continue
+
+		var pos := Vector2.ZERO
+		var attempts := 0
+		while attempts < 20:
+			pos = Vector2(randf_range(240.0, 790.0), randf_range(140.0, 480.0))
+			var too_close := false
+			for p in placed:
+				if pos.distance_to(p) < MIN_DIST:
+					too_close = true
+					break
+			if not too_close:
+				break
+			attempts += 1
+
+		if attempts >= 20:
+			continue
+
+		placed.append(pos)
+		var sprite := Sprite2D.new()
+		sprite.texture = tex
+		sprite.scale = PROP_SCALE
+		sprite.position = pos
+		add_child(sprite)
