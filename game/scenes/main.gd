@@ -96,6 +96,10 @@ func _populate_terrain() -> void:
 	print("[DEBUG] TileMap node: ", tilemap)
 	print("[DEBUG] TileMap visible: ", tilemap.visible)
 
+	# Diagnostic: test if texture loads directly
+	var grass_texture = load("res://resources/grass.png")
+	print("[DEBUG] Grass texture loaded: ", grass_texture)
+
 	var tileset = load("res://resources/terrain_tileset.tres")
 	print("[DEBUG] TileSet loaded: ", tileset)
 	print("[DEBUG] TileSet sources: ", tileset.get_source_count() if tileset else "NULL")
