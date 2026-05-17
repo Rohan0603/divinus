@@ -1,28 +1,27 @@
-[gd_scene load_steps=3 format=3 uid="uid://c17s0tndkc82m"]
+[gd_scene format=3 uid="uid://c17s0tndkc82m"]
 
-[ext_resource type="Script" path="res://scenes/main.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="2"]
+[ext_resource type="Script" uid="uid://ce64emm77nx6s" path="res://scenes/main.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://c1l3gxgqvrdja" path="res://scenes/HUD.tscn" id="2"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=882132732]
 script = ExtResource("1")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=102923970]
 anchor_mode = 0
-zoom = 1.0
 limit_left = 0
 limit_top = 0
 limit_right = 1024
 limit_bottom = 600
 
-[node name="Background" type="ColorRect" parent="."]
-anchors_rect_changed = true
+[node name="Background" type="ColorRect" parent="." unique_id=1120779010]
+visible = false
 offset_right = 1024.0
 offset_bottom = 600.0
-color = Color(0.4, 0.4, 0.4, 1.0)
-visible = false
+color = Color(0.4, 0.4, 0.4, 1)
 
-[node name="TileMap" type="TileMap" parent="."]
+[node name="TileMap" type="TileMap" parent="." unique_id=389683112]
+format = 3
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=440001646]
 
-[node name="HUD" parent="UI" instance=ExtResource("2")]
+[node name="HUD" parent="UI" unique_id=1910180231 instance=ExtResource("2")]
