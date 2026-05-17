@@ -100,9 +100,19 @@ func _populate_terrain() -> void:
 	var grass_texture = load("res://resources/grass.png")
 	print("[DEBUG] Grass texture loaded: ", grass_texture)
 
+	# Diagnostic: try loading .tres with error handling
+	if ResourceLoader.exists("res://resources/terrain_tileset.tres"):
+		print("[DEBUG] .tres file exists in resource system")
+	else:
+		print("[DEBUG] .tres file NOT found in resource system")
+
 	var tileset = load("res://resources/terrain_tileset.tres")
 	print("[DEBUG] TileSet loaded: ", tileset)
-	print("[DEBUG] TileSet sources: ", tileset.get_source_count() if tileset else "NULL")
+
+	# If null, list all errors
+	if tileset == null:
+		var errors = ResourceLoader.get_error()
+		print("[DEBUG] ResourceLoader error: ", errors)
 
 	tilemap.tile_set = tileset
 
