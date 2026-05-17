@@ -5,6 +5,7 @@ const NPC_SCENE := preload("res://scenes/NPC.tscn")
 const SHRINE_CONSTRUCTION_SCENE := preload("res://scenes/ShrineConstructionSite.tscn")
 const SHRINE_SCENE := preload("res://scenes/Shrine.tscn")
 const BOON_SCENE := preload("res://scenes/Boon.tscn")
+const WIN_SCREEN_SCENE := preload("res://scenes/WinScreen.tscn")
 
 const NUM_STARTING_NPCS := 6
 const BOON_COST := 5.0
@@ -21,7 +22,9 @@ func _ready() -> void:
 	EventBus.npc_converted.connect(_on_npc_converted)
 	EventBus.day_ending.connect(_on_day_ending)
 	EventBus.enemy_spawned.connect(_on_enemy_spawned)
+	EventBus.day_won.connect(_on_day_won)
 	GodStats.game_over.connect(_on_game_over)
+	_populate_terrain()
 	_spawn_npcs()
 
 func _spawn_npcs() -> void:
@@ -59,6 +62,10 @@ func _on_shrine_completed(site: Node) -> void:
 func _on_game_over() -> void:
 	print("Game Over! All followers lost.")
 
+func _on_day_won() -> void:
+	var win_screen := WIN_SCREEN_SCENE.instantiate()
+	add_child(win_screen)
+
 func _on_day_ending(_day_number: int) -> void:
 	# Screen shake when raid begins
 	_screen_shake()
@@ -81,3 +88,18 @@ func _screen_shake() -> void:
 		await get_tree().process_frame
 
 	_camera.offset = orig_offset
+
+# Populate tilemap with simple grass terrain
+func _populate_terrain() -> void:
+	var tilemap: TileMap = $TileMap
+	tilemap.tile_set = load("res://resources/terrain_tileset.tres")
+
+	var tile_size = 32
+	var grid_width = 1024 / tile_size
+	var grid_height = 600 / tile_size
+
+	for x in range(grid_width):
+		for y in range(grid_height):
+			# Grass tile (ID 0) for all positions; occasional dirt (ID 1)
+			var tile_id = 1 if randf() < 0.15 else 0
+			tilemap.set_cell(0, Vector2i(x, y), 0, Vector2i(tile_id, 0))

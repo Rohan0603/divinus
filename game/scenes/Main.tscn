@@ -19,6 +19,7 @@ anchors_rect_changed = true
 offset_right = 1024.0
 offset_bottom = 600.0
 color = Color(0.4, 0.4, 0.4, 1.0)
+visible = false
 
 [node name="TileMap" type="TileMap" parent="."]
 
