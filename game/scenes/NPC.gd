@@ -1,4 +1,5 @@
 # npc.gd — NPC with role-based behaviour and skill progression
+# Shapes encode role identity; color encodes skill level
 extends CharacterBody2D
 
 const SPEED := 80.0
@@ -13,12 +14,14 @@ const MAX_SKILL_LEVEL := 5
 const PREACHER_RANGE := 32.0
 
 const ROLE_COLORS := {
-	"HeadPreacher": Color(1.0, 0.85, 0.2),
-	"Builder": Color(1.0, 0.55, 0.0),
-	"Gatherer": Color(0.0, 0.7, 0.7),
-	"Farmer": Color(0.55, 0.9, 0.1),
-	"Defender": Color(0.9, 0.1, 0.1),
-	"Scholar": Color(0.35, 0.0, 0.6),
+	"Unaware":     Color(0.40, 0.50, 0.90),
+	"Witness":     Color(1.00, 1.00, 0.85),
+	"HeadPreacher": Color(1.00, 0.85, 0.20),
+	"Builder":     Color(1.00, 0.55, 0.00),
+	"Gatherer":    Color(0.00, 0.70, 0.70),
+	"Farmer":      Color(0.55, 0.90, 0.10),
+	"Defender":    Color(0.90, 0.10, 0.10),
+	"Scholar":     Color(0.35, 0.00, 0.60),
 }
 
 var current_state: String = "Unaware"
@@ -34,11 +37,12 @@ var _conversion_target: Node = null
 var _current_site: Node = null
 var _at_site: bool = false
 
-@onready var sprite: ColorRect = $ColorRect
+@onready var sprite: Polygon2D = $Polygon2D
 
 func _ready() -> void:
 	add_to_group("npcs")
-	sprite.color = Color.BLUE
+	sprite.polygon = _shape_square(12.0)
+	sprite.color = ROLE_COLORS["Unaware"]
 	_pick_wander_target()
 	EventBus.boon_cast.connect(_on_boon_cast)
 
@@ -54,20 +58,79 @@ func _physics_process(delta: float) -> void:
 		"Scholar":      _update_scholar(delta)
 	move_and_slide()
 
-# --- Unaware: blue, random wander ---
+# --- Shape generators ---
+
+func _shape_square(r: float) -> PackedVector2Array:
+	return PackedVector2Array([
+		Vector2(-r, -r), Vector2(r, -r),
+		Vector2(r, r),   Vector2(-r, r),
+	])
+
+func _shape_circle(r: float, n: int = 10) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in n:
+		var a = TAU * i / n - PI / 2.0
+		pts.append(Vector2(cos(a), sin(a)) * r)
+	return pts
+
+func _shape_polygon(sides: int, r: float) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in sides:
+		var a = TAU * i / sides - PI / 2.0
+		pts.append(Vector2(cos(a), sin(a)) * r)
+	return pts
+
+func _shape_triangle(r: float) -> PackedVector2Array:
+	return PackedVector2Array([
+		Vector2(0.0, -r),
+		Vector2(r * 0.866, r * 0.5),
+		Vector2(-r * 0.866, r * 0.5),
+	])
+
+func _shape_diamond(r: float) -> PackedVector2Array:
+	return PackedVector2Array([
+		Vector2(0.0, -r),
+		Vector2(r * 0.75, 0.0),
+		Vector2(0.0, r),
+		Vector2(-r * 0.75, 0.0),
+	])
+
+func _shape_shield(r: float) -> PackedVector2Array:
+	return PackedVector2Array([
+		Vector2(0.0, -r),
+		Vector2(r, -r * 0.25),
+		Vector2(r * 0.65, r * 0.75),
+		Vector2(-r * 0.65, r * 0.75),
+		Vector2(-r, -r * 0.25),
+	])
+
+func _shape_star(outer: float, inner: float, points: int = 5) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in points * 2:
+		var a = TAU * i / (points * 2) - PI / 2.0
+		var rad = outer if i % 2 == 0 else inner
+		pts.append(Vector2(cos(a), sin(a)) * rad)
+	return pts
+
+func _apply_shape(r: String) -> void:
+	match r:
+		"HeadPreacher": sprite.polygon = _shape_star(14.0, 6.0)
+		"Builder":      sprite.polygon = _shape_triangle(14.0)
+		"Gatherer":     sprite.polygon = _shape_circle(12.0)
+		"Farmer":       sprite.polygon = _shape_diamond(14.0)
+		"Defender":     sprite.polygon = _shape_shield(13.0)
+		"Scholar":      sprite.polygon = _shape_polygon(6, 13.0)
+
+# --- State updates ---
 
 func _update_unaware(delta: float) -> void:
 	_wander(delta)
-
-# --- Witness: yellow, accumulate faith ---
 
 func _update_witness(delta: float) -> void:
 	velocity = Vector2.ZERO
 	faith += FAITH_RATE * delta
 	if faith >= FAITH_THRESHOLD:
 		_become_follower()
-
-# --- Head Preacher: golden, hunts unaware NPCs ---
 
 func _update_head_preacher(delta: float) -> void:
 	if not is_instance_valid(_conversion_target) or _conversion_target.current_state != "Unaware":
@@ -82,8 +145,6 @@ func _update_head_preacher(delta: float) -> void:
 		_conversion_target = null
 	else:
 		velocity = (_conversion_target.global_position - global_position).normalized() * SPEED
-
-# --- Builder: orange, walks to construction site ---
 
 func _update_builder(delta: float) -> void:
 	if not is_instance_valid(_current_site):
@@ -117,8 +178,6 @@ func _leave_site() -> void:
 	_at_site = false
 	_current_site = null
 
-# --- Gatherer: teal, wander + DP income ---
-
 func _update_gatherer(delta: float) -> void:
 	_wander(delta)
 	_income_timer -= delta
@@ -126,8 +185,6 @@ func _update_gatherer(delta: float) -> void:
 		_income_timer = INCOME_INTERVAL
 		GodStats.add_divine_power(3.0 * _efficiency())
 		_gain_xp(INCOME_XP)
-
-# --- Farmer: yellow-green, orbit shrine + DP income ---
 
 func _update_farmer(delta: float) -> void:
 	var shrine := _find_nearest_shrine()
@@ -149,8 +206,6 @@ func _update_farmer(delta: float) -> void:
 		GodStats.add_divine_power(4.0 * _efficiency())
 		_gain_xp(INCOME_XP)
 
-# --- Defender: red, chases enemies and forces them to flee ---
-
 func _update_defender(delta: float) -> void:
 	var enemy := _find_nearest_enemy()
 	if enemy == null:
@@ -161,8 +216,6 @@ func _update_defender(delta: float) -> void:
 	if global_position.distance_to(enemy.global_position) < 40.0:
 		enemy.start_exit()
 		_gain_xp(INCOME_XP)
-
-# --- Scholar: deep purple, near shrine + DP income ---
 
 func _update_scholar(delta: float) -> void:
 	var shrine := _find_nearest_shrine()
@@ -181,8 +234,6 @@ func _update_scholar(delta: float) -> void:
 		_income_timer = INCOME_INTERVAL
 		GodStats.add_divine_power(2.5 * _efficiency())
 		_gain_xp(INCOME_XP)
-
-# --- Wander helper ---
 
 func _wander(delta: float) -> void:
 	if _idle_timer > 0.0:
@@ -204,14 +255,14 @@ func _pick_wander_target() -> void:
 func witness_miracle() -> void:
 	if current_state == "Unaware":
 		current_state = "Witness"
-		sprite.color = Color.YELLOW
+		sprite.polygon = _shape_circle(12.0)
+		sprite.color = ROLE_COLORS["Witness"]
 		faith = 0.0
 
 func _become_follower() -> void:
 	add_to_group("followers")
 	GodStats.add_follower()
 	EventBus.npc_converted.emit(self)
-	# assign_head_preacher() may have been called synchronously during the emit above
 	if current_state != "HeadPreacher":
 		_assign_role()
 
@@ -230,11 +281,10 @@ func _set_role(new_role: String) -> void:
 	if role != "" and role != "HeadPreacher":
 		GodStats.register_role(role)
 	current_state = role
+	_apply_shape(role)
 	sprite.color = ROLE_COLORS.get(role, Color.WHITE)
 	_income_timer = INCOME_INTERVAL
 	_conversion_target = null
-
-# --- Damage ---
 
 func take_damage() -> void:
 	if current_state == "Unaware" or current_state == "Witness":
@@ -248,7 +298,8 @@ func take_damage() -> void:
 	GodStats.remove_follower()
 	current_state = "Unaware"
 	faith = 0.0
-	sprite.color = Color.BLUE
+	sprite.polygon = _shape_square(12.0)
+	sprite.color = ROLE_COLORS["Unaware"]
 	_pick_wander_target()
 
 # --- Skill ---
@@ -313,8 +364,6 @@ func _find_nearest_enemy() -> Node:
 			best_dist = d
 			best = e
 	return best
-
-# --- Signal handler ---
 
 func _on_boon_cast(_boon_data: Dictionary, pos: Vector2) -> void:
 	if current_state == "Unaware" and global_position.distance_to(pos) <= BOON_RADIUS:

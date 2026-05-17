@@ -26,7 +26,24 @@
       "Bash(curl -s --max-time 3 http://127.0.0.1:8000/mcp)",
       "Bash(echo \"exit: $?\")",
       "Skill(update-config)",
-      "Bash(claude mcp *)"
+      "Bash(claude mcp *)",
+      "mcp__godot-ai__editor_state",
+      "PowerShell(jq *)",
+      "PowerShell($json = Get-Content \"C:\\\\project!!\\\\divinus\\\\.claude\\\\settings.local.json\" -Raw | ConvertFrom-Json; $json.hooks.SessionStart[0].hooks[0].command)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "try { Invoke-WebRequest -Uri 'http://127.0.0.1:8000/mcp' -TimeoutSec 2 -UseBasicParsing | Out-Null } catch { if ($_.Exception.Response) { exit 0 } else { Write-Output '{\"systemMessage\": \"Godot MCP server is not running — please start the Godot AI plugin in the Godot editor (Project > Tools > Godot AI MCP) before working on this project.\"}' } }",
+            "shell": "powershell",
+            "statusMessage": "Checking Godot MCP connection..."
+          }
+        ]
+      }
     ]
   }
 }
