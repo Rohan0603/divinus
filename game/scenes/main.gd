@@ -25,6 +25,7 @@ func _ready() -> void:
 	EventBus.day_won.connect(_on_day_won)
 	GodStats.game_over.connect(_on_game_over)
 	_populate_terrain()
+	RivalSpawner.set_world_root(self)
 	_spawn_npcs()
 
 func _spawn_npcs() -> void:
