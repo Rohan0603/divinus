@@ -9,12 +9,17 @@ const _TINTS := {
 	WorldGenerator.Biome.MOUNTAIN: Color(0.65, 0.65, 0.65),
 }
 const _BASE_TEXTURE := {
-	WorldGenerator.Biome.WATER:    "res://assets/tiles/grass_block_S.png",
-	WorldGenerator.Biome.SAND:     "res://assets/tiles/grass_block_S.png",
-	WorldGenerator.Biome.PLAINS:   "res://assets/tiles/grass_block_S.png",
-	WorldGenerator.Biome.FOREST:   "res://assets/tiles/grass_block_S.png",
 	WorldGenerator.Biome.MOUNTAIN: "res://assets/tiles/cliff_top_S.png",
 }
+
+func _get_grass_variant_path() -> String:
+	var variants := ["res://assets/tiles/grass_block_E.png", "res://assets/tiles/grass_block_N.png", "res://assets/tiles/grass_block_S.png", "res://assets/tiles/grass_block_W.png"]
+	return variants[randi() % variants.size()]
+
+func _get_base_texture(biome: int) -> String:
+	if biome == WorldGenerator.Biome.MOUNTAIN:
+		return _BASE_TEXTURE[WorldGenerator.Biome.MOUNTAIN]
+	return _get_grass_variant_path()
 
 func build_tileset() -> TileSet:
 	var ts := TileSet.new()
@@ -23,7 +28,7 @@ func build_tileset() -> TileSet:
 	ts.tile_layout      = TileSet.TILE_LAYOUT_DIAMOND_DOWN
 	ts.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_HORIZONTAL
 	for biome in _TINTS.keys():
-		ts.add_source(_make_source(_BASE_TEXTURE[biome], _TINTS[biome]), biome)
+		ts.add_source(_make_source(_get_base_texture(biome), _TINTS[biome]), biome)
 	return ts
 
 func _make_source(path: String, tint: Color) -> TileSetAtlasSource:
