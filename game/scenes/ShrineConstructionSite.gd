@@ -19,6 +19,22 @@ func _process(delta: float) -> void:
 		_build_accum += delta
 		if _build_accum >= BUILD_TIME:
 			_building = false
+			# Particle burst
+			var particles = CPUParticles2D.new()
+			particles.amount = 50
+			particles.lifetime = 1.5
+			particles.speed_scale = 2.0
+			particles.global_position = global_position
+			get_parent().add_child(particles)
+			particles.emitting = true
+			# Camera flash
+			var hud = get_tree().root.get_node("Main/HUD")
+			var flash_tween = create_tween()
+			flash_tween.set_trans(Tween.TRANS_QUAD)
+			flash_tween.set_ease(Tween.EASE_OUT)
+			flash_tween.tween_callback(func(): hud.modulate = Color.WHITE)
+			flash_tween.tween_property(hud, "modulate", Color(1, 1, 1, 0), 0.5)
+			flash_tween.tween_callback(func(): hud.modulate = Color.WHITE)
 			shrine_completed.emit()
 
 func builder_arrived() -> void:
