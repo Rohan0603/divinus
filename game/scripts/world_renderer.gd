@@ -8,35 +8,23 @@ const _TINTS := {
 	WorldGenerator.Biome.FOREST:   Color(0.28, 0.55, 0.18),
 	WorldGenerator.Biome.MOUNTAIN: Color(0.65, 0.65, 0.65),
 }
-const _BASE_TEXTURE := {
-	WorldGenerator.Biome.MOUNTAIN: "res://assets/tiles/cliff_top_S.png",
-}
+const _BASE_TEXTURE := "res://assets/tiles/isometric_terrain.png"
 
 func build_tileset() -> TileSet:
 	var ts := TileSet.new()
-	ts.tile_size        = Vector2i(64, 32)
+	ts.tile_size        = Vector2i(16, 17)
 	ts.tile_shape       = TileSet.TILE_SHAPE_ISOMETRIC
 	ts.tile_layout      = TileSet.TILE_LAYOUT_DIAMOND_DOWN
 	ts.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_HORIZONTAL
 
-	# For MOUNTAIN, create 1 source (cliff_top_S only)
-	var mt_source = _make_source(_BASE_TEXTURE[WorldGenerator.Biome.MOUNTAIN], _TINTS[WorldGenerator.Biome.MOUNTAIN])
-	ts.add_source(mt_source, WorldGenerator.Biome.MOUNTAIN * 10)
-
-	# For other biomes, create 4 sources (dirtTiles_E/N/S/W variants)
-	var variants := ["res://assets/tiles/dirtTiles_E.png", "res://assets/tiles/dirtTiles_N.png", "res://assets/tiles/dirtTiles_S.png", "res://assets/tiles/dirtTiles_W.png"]
 	for biome in _TINTS.keys():
-		if biome == WorldGenerator.Biome.MOUNTAIN:
-			continue  # Already handled above
-		for variant_idx in range(variants.size()):
-			var source = _make_source(variants[variant_idx], _TINTS[biome])
-			ts.add_source(source, biome * 10 + variant_idx)
+		var source = _make_source(_BASE_TEXTURE, _TINTS[biome])
+		ts.add_source(source, biome * 10)
 
 	return ts
 
 func _make_source(path: String, tint: Color) -> TileSetAtlasSource:
 	var img: Image = (load(path) as Texture2D).get_image()
-	img.resize(64, 128, Image.INTERPOLATE_BILINEAR)
 	img.convert(Image.FORMAT_RGBA8)
 	for x in range(img.get_width()):
 		for y in range(img.get_height()):
@@ -45,7 +33,7 @@ func _make_source(path: String, tint: Color) -> TileSetAtlasSource:
 				img.set_pixel(x, y, Color(p.r * tint.r, p.g * tint.g, p.b * tint.b, p.a))
 	var src := TileSetAtlasSource.new()
 	src.texture             = ImageTexture.create_from_image(img)
-	src.texture_region_size = Vector2i(64, 128)
+	src.texture_region_size = Vector2i(16, 17)
 	src.create_tile(Vector2i(0, 0))
 	return src
 
@@ -57,8 +45,4 @@ func render(tilemap: TileMap, generator: WorldGenerator) -> void:
 	for col in range(WorldGenerator.WIDTH):
 		for row in range(WorldGenerator.HEIGHT):
 			var biome := generator.get_biome(col, row)
-			# Randomly pick a variant source per tile (0-3 for grass variants, 0 for mountain)
-			var variant_idx := 0
-			if biome != WorldGenerator.Biome.MOUNTAIN:
-				variant_idx = randi() % 4  # Random 0-3 for E/N/S/W variants
-			tilemap.set_cell(0, Vector2i(col, row), biome * 10 + variant_idx, Vector2i(0, 0))
+			tilemap.set_cell(0, Vector2i(col, row), biome * 10, Vector2i(0, 0))
