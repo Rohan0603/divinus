@@ -9,11 +9,11 @@ const _TINTS := {
 	WorldGenerator.Biome.MOUNTAIN: Color(0.65, 0.65, 0.65),
 }
 const _BASE_TEXTURE := {
-	WorldGenerator.Biome.WATER:    "res://assets/tiles/dirtTiles_S.png",
-	WorldGenerator.Biome.SAND:     "res://assets/tiles/dirtTiles_S.png",
-	WorldGenerator.Biome.PLAINS:   "res://assets/tiles/dirtTiles_S.png",
-	WorldGenerator.Biome.FOREST:   "res://assets/tiles/dirtTiles_S.png",
-	WorldGenerator.Biome.MOUNTAIN: "res://assets/tiles/stoneTile_S.png",
+	WorldGenerator.Biome.WATER:    "res://assets/tiles/grass_block_S.png",
+	WorldGenerator.Biome.SAND:     "res://assets/tiles/grass_block_S.png",
+	WorldGenerator.Biome.PLAINS:   "res://assets/tiles/grass_block_S.png",
+	WorldGenerator.Biome.FOREST:   "res://assets/tiles/grass_block_S.png",
+	WorldGenerator.Biome.MOUNTAIN: "res://assets/tiles/cliff_top_S.png",
 }
 
 func build_tileset() -> TileSet:
