@@ -55,7 +55,7 @@ func _hunt_nearest_follower() -> void:
 	if nearest_dist < CONTACT_DISTANCE and _damage_timer <= 0.0:
 		_damage_timer = DAMAGE_COOLDOWN
 		_hit_feedback(nearest)
-		nearest.take_damage()
+		nearest.take_damage(self)
 		start_exit()
 
 # Walk toward the nearest map edge, then despawn

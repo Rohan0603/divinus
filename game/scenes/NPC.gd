@@ -287,9 +287,13 @@ func _set_role(new_role: String) -> void:
 	_income_timer = INCOME_INTERVAL
 	_conversion_target = null
 
-func take_damage() -> void:
+func take_damage(attacker: Node = null) -> void:
 	if current_state == "Unaware" or current_state == "Witness":
 		return
+	# Knockback velocity away from attacker
+	if attacker != null:
+		var knockback_direction = (global_position - attacker.global_position).normalized()
+		velocity = knockback_direction * 300.0
 	if role == "Builder":
 		_leave_site()
 	if role != "" and role != "HeadPreacher":
