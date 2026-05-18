@@ -23,8 +23,8 @@ func build_tileset() -> TileSet:
 	var mt_source = _make_source(_BASE_TEXTURE[WorldGenerator.Biome.MOUNTAIN], _TINTS[WorldGenerator.Biome.MOUNTAIN])
 	ts.add_source(mt_source, WorldGenerator.Biome.MOUNTAIN * 10)
 
-	# For other biomes, create 4 sources (grass_block_E/N/S/W variants)
-	var variants := ["res://assets/tiles/grass_block_E.png", "res://assets/tiles/grass_block_N.png", "res://assets/tiles/grass_block_S.png", "res://assets/tiles/grass_block_W.png"]
+	# For other biomes, create 4 sources (dirtTiles_E/N/S/W variants)
+	var variants := ["res://assets/tiles/dirtTiles_E.png", "res://assets/tiles/dirtTiles_N.png", "res://assets/tiles/dirtTiles_S.png", "res://assets/tiles/dirtTiles_W.png"]
 	for biome in _TINTS.keys():
 		if biome == WorldGenerator.Biome.MOUNTAIN:
 			continue  # Already handled above
