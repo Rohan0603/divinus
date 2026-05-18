@@ -42,6 +42,8 @@ func _to_biome(elev: float, moisture: float) -> int:
 	return Biome.PLAINS
 
 func get_biome(col: int, row: int) -> int:
+	if col < 0 or col >= WIDTH or row < 0 or row >= HEIGHT:
+		return Biome.WATER
 	return biome_map[col][row]
 
 func get_land_positions(tilemap: TileMap) -> Array:

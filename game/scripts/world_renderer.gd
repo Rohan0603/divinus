@@ -39,7 +39,8 @@ func render(tilemap: TileMap, generator: WorldGenerator) -> void:
 	for col in range(WorldGenerator.WIDTH):
 		for row in range(WorldGenerator.HEIGHT):
 			var biome := generator.get_biome(col, row)
-			# Randomly pick a tile variant from the spritesheet (2 cols × 5 rows)
-			var tile_x := randi() % 2
-			var tile_y := randi() % 5
+			# Deterministically pick a tile variant based on position (2 cols × 5 rows)
+			var seed_val := hash(Vector2i(col, row)) % 10
+			var tile_x   := seed_val % 2
+			var tile_y   := seed_val / 2
 			tilemap.set_cell(0, Vector2i(col, row), biome * 10, Vector2i(tile_x, tile_y))
