@@ -6,7 +6,7 @@ const HEIGHT := 80
 
 enum Biome { WATER = 0, SAND = 1, PLAINS = 2, FOREST = 3, MOUNTAIN = 4 }
 
-var biome_map: Array = []
+var biome_map: Array[Array[int]] = []
 
 func generate(gen_seed: int) -> void:
 	var noise := FastNoiseLite.new()
