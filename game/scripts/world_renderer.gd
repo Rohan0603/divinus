@@ -12,23 +12,26 @@ const _BASE_TEXTURE := {
 	WorldGenerator.Biome.MOUNTAIN: "res://assets/tiles/cliff_top_S.png",
 }
 
-func _get_grass_variant_path() -> String:
-	var variants := ["res://assets/tiles/grass_block_E.png", "res://assets/tiles/grass_block_N.png", "res://assets/tiles/grass_block_S.png", "res://assets/tiles/grass_block_W.png"]
-	return variants[randi() % variants.size()]
-
-func _get_base_texture(biome: int) -> String:
-	if biome == WorldGenerator.Biome.MOUNTAIN:
-		return _BASE_TEXTURE[WorldGenerator.Biome.MOUNTAIN]
-	return _get_grass_variant_path()
-
 func build_tileset() -> TileSet:
 	var ts := TileSet.new()
 	ts.tile_size        = Vector2i(64, 32)
 	ts.tile_shape       = TileSet.TILE_SHAPE_ISOMETRIC
 	ts.tile_layout      = TileSet.TILE_LAYOUT_DIAMOND_DOWN
 	ts.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_HORIZONTAL
+
+	# For MOUNTAIN, create 1 source (cliff_top_S only)
+	var mt_source = _make_source(_BASE_TEXTURE[WorldGenerator.Biome.MOUNTAIN], _TINTS[WorldGenerator.Biome.MOUNTAIN])
+	ts.add_source(mt_source, WorldGenerator.Biome.MOUNTAIN * 10)
+
+	# For other biomes, create 4 sources (grass_block_E/N/S/W variants)
+	var variants := ["res://assets/tiles/grass_block_E.png", "res://assets/tiles/grass_block_N.png", "res://assets/tiles/grass_block_S.png", "res://assets/tiles/grass_block_W.png"]
 	for biome in _TINTS.keys():
-		ts.add_source(_make_source(_get_base_texture(biome), _TINTS[biome]), biome)
+		if biome == WorldGenerator.Biome.MOUNTAIN:
+			continue  # Already handled above
+		for variant_idx in range(variants.size()):
+			var source = _make_source(variants[variant_idx], _TINTS[biome])
+			ts.add_source(source, biome * 10 + variant_idx)
+
 	return ts
 
 func _make_source(path: String, tint: Color) -> TileSetAtlasSource:
@@ -54,4 +57,8 @@ func render(tilemap: TileMap, generator: WorldGenerator) -> void:
 	for col in range(WorldGenerator.WIDTH):
 		for row in range(WorldGenerator.HEIGHT):
 			var biome := generator.get_biome(col, row)
-			tilemap.set_cell(0, Vector2i(col, row), biome, Vector2i(0, 0))
+			# Randomly pick a variant source per tile (0-3 for grass variants, 0 for mountain)
+			var variant_idx := 0
+			if biome != WorldGenerator.Biome.MOUNTAIN:
+				variant_idx = randi() % 4  # Random 0-3 for E/N/S/W variants
+			tilemap.set_cell(0, Vector2i(col, row), biome * 10 + variant_idx, Vector2i(0, 0))
