@@ -39,8 +39,10 @@ func _spawn_bandit() -> void:
 	get_tree().current_scene.add_child(bandit)
 
 func _random_edge_position() -> Vector2:
+	var cam := get_tree().current_scene.get_node_or_null("Camera2D") as Camera2D
+	var center := cam.global_position if is_instance_valid(cam) else Vector2(512.0, 1280.0)
 	match randi() % 4:
-		0: return Vector2(randf_range(50.0, 974.0), 0.0)
-		1: return Vector2(randf_range(50.0, 974.0), 600.0)
-		2: return Vector2(0.0, randf_range(50.0, 550.0))
-		_: return Vector2(1024.0, randf_range(50.0, 550.0))
+		0: return Vector2(randf_range(center.x - 512.0, center.x + 512.0), center.y - 350.0)
+		1: return Vector2(randf_range(center.x - 512.0, center.x + 512.0), center.y + 350.0)
+		2: return Vector2(center.x - 562.0, randf_range(center.y - 300.0, center.y + 300.0))
+		_: return Vector2(center.x + 562.0, randf_range(center.y - 300.0, center.y + 300.0))
