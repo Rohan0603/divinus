@@ -9,6 +9,7 @@ extends CanvasLayer
 @onready var followers_label: Label = $VBoxContainer/FollowersLabel
 @onready var level_label: Label = $VBoxContainer/LevelLabel
 @onready var day_label: Label = $VBoxContainer/DayLabel
+@onready var rival_label: Label = $VBoxContainer/RivalLabel
 @onready var fastforward_notification_label: Label = $FastForwardNotificationLabel
 
 # Notification system
@@ -23,12 +24,24 @@ func _ready() -> void:
 	# Connect to EventBus day change signal
 	EventBus.day_changed.connect(_on_day_changed)
 
+	# Connect to rival stats changes
+	GodStats.rival_stats_changed.connect(_on_rival_stats_changed)
+
+	# Increase font size to 40pt for all labels
+	var font_size = 40
+	energy_label.add_theme_font_size_override("font_size", font_size)
+	followers_label.add_theme_font_size_override("font_size", font_size)
+	level_label.add_theme_font_size_override("font_size", font_size)
+	day_label.add_theme_font_size_override("font_size", font_size)
+	rival_label.add_theme_font_size_override("font_size", font_size)
+
 	# Initialize labels with current values
 	_on_energy_changed(GodStats.divine_power)
 	_on_followers_changed(GodStats.followers)
 	_on_level_up(GodStats.god_level)
 	_on_day_changed(DayClock.current_day)
-	
+	_on_rival_stats_changed()
+
 	print("HUD initialized")
 
 func _process(delta: float) -> void:
@@ -63,6 +76,10 @@ func _on_level_up(new_level: int) -> void:
 func _on_day_changed(day_number: int) -> void:
 	# This is handled in _process(), but we can log it
 	print("Day changed to: ", day_number)
+
+# Called when rival stats change
+func _on_rival_stats_changed() -> void:
+	rival_label.text = "Rival: %d followers" % GodStats.rival_followers
 
 func _show_notification(text: String) -> void:
 	fastforward_notification_label.text = text
