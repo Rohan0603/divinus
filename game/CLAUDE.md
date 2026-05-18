@@ -6,10 +6,15 @@
 
 ## Quick Setup
 
-**Launch Godot:**
+**Launch Godot (Testing):**
 ```bash
-godot --path "C:\project!!\divinus\game"
-# Or open game/project.godot directly in Godot Editor
+# Quick console-based testing (minimal UI, full logging)
+"C:\Users\leoZblack\Desktop\Godot_v4.6.2-stable_win64_console.exe" --path "C:\project!!\divinus\game"
+```
+
+**Launch Godot (Editor):**
+```bash
+# Or open game/project.godot directly in Godot Editor for interactive development
 ```
 
 **Rendering:** `gl_compatibility` (OpenGL) — keep this renderer.
@@ -155,7 +160,7 @@ game/
 ## Build Order Status
 
 1. ✅ **Autoloads** — GodStats, EventBus, DayClock, EnemySpawner
-2. ⬜ **TileMap world** — grass/dirt tiles (currently a blank ColorRect background)
+2. ✅ **TileMap world** — isometric dungeon dirt tiles (E/N/S/W directional variants with biome tinting)
 3. ✅ **NPC wandering** — CharacterBody2D movement to random points
 4. ✅ **Click-to-cast boon** — left click, costs 5 DP, Area2D radius 200px
 5. ✅ **NPC conversion** — faith threshold → role assignment → colored sprite
@@ -167,16 +172,27 @@ game/
 11. ✅ **DayClock + day counter** — HUD shows day and time remaining
 12. ✅ **Enemy spawner** — wave table, bandits spawn on day_ending
 13. ✅ **Game over condition** — followers == 0 → game_over signal
-14. ⬜ **Win condition** — survive day 15 → win screen (signal exists, no UI)
-15. ⬜ **Rival god agents** — planned post-MVP
+14. ✅ **Win condition** — survive day 15 with more followers than rival → win screen with restart
+15. ✅ **Rival god agents** — spawns day 6, casts boons, competes for followers
+
+---
+
+## Polish & Optimization (Completed)
+
+1. ✅ **Smooth Camera Following** — Camera eases to player position over 0.3s with TRANS_CUBIC easing
+2. ✅ **Enhanced Boon Ring Animation** — Boons pulse scale (0.8x–1.2x) continuously with sine wave easing
+3. ✅ **Shrine Completion Celebration** — 50-particle burst + white screen flash on completion
+4. ✅ **NPC Knockback Feedback** — NPCs knocked back 300px/s away from enemy on hit
+5. ✅ **HUD Polish** — Font size 24pt, labels stacked in VBoxContainer
 
 ---
 
 ## Core Systems
 
 ### Win / Fail
-- **Win:** Survive 15 in-game days (not implemented — game_over signal exists but no win screen)
-- **Fail:** Followers reach 0 → `GodStats.game_over` → `main.gd` prints "Game Over!"
+- **Win:** Day 15 reached AND player has more followers than rival → "YOU WIN!" screen (restart resets all state)
+- **Fail (Followers):** Followers reach 0 → `GodStats.game_over` → game over screen (restart resets all state)
+- **Fail (Rival):** Day 15 reached AND rival has ≥ followers → `GodStats.game_over` → game over
 
 ### Divine Power Economy
 | Source | Rate |
@@ -200,6 +216,14 @@ game/
 - Bandits spawn on map edges, hunt nearest NPC in "followers" group
 - Contact → `npc.take_damage()` → follower reverts to Unaware + bandit exits
 - Day rollover → all remaining bandits exit
+
+### Rival God System
+- **Spawn:** First rival spawns day 6 (RivalSpawner). Second spawns day 11 if player has >10 followers
+- **Mechanics:** Rival casts boons every 8 seconds (costs 20 DP); unaware NPCs within 200px convert to rival (turn cyan)
+- **Win Condition:** Day 15 requires MORE followers than rival (not tied)
+- **Tracking:** GodStats tracks `rival_followers`, `rival_divine_power`, `rival_shrines_built`
+- **HUD:** Displays "Rival: X followers" to show competition progress
+- **Logging:** [RivalGod], [RivalSpawner], [NPC] prefixes in console for debugging
 
 ---
 
