@@ -8,8 +8,8 @@ extends CanvasLayer
 @onready var energy_label: Label = $VBoxContainer/DivinePowerLabel
 @onready var followers_label: Label = $VBoxContainer/FollowersLabel
 @onready var level_label: Label = $VBoxContainer/LevelLabel
-@onready var day_label: Label = $VBoxContainer/DayLabel
-@onready var rival_label: Label = $VBoxContainer/RivalLabel
+@onready var day_label: Label = $DayLabel
+@onready var rival_label: Label = $RivalLabel
 @onready var fastforward_notification_label: Label = $FastForwardNotificationLabel
 
 # Notification system
