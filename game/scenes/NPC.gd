@@ -249,7 +249,7 @@ func _wander(delta: float) -> void:
 		velocity = (_wander_target - global_position).normalized() * SPEED
 
 func _pick_wander_target() -> void:
-	_wander_target = Vector2(randf_range(80.0, 944.0), randf_range(80.0, 520.0))
+	_wander_target = Vector2(randf_range(-1200.0, 2200.0), randf_range(200.0, 2300.0))
 
 # --- Conversion ---
 
@@ -386,13 +386,15 @@ func _on_rival_boon_cast(boon_data: Dictionary, position: Vector2) -> void:
 	if current_state == "Unaware":
 		var distance = global_position.distance_to(position)
 		if distance <= BOON_RADIUS:
-			# Convert to rival instead of player
-			_become_rival_follower(boon_data.get("rival_id", 0))
+			var rival_id = boon_data.get("rival_id", 0)
+			print("[NPC] Converted to rival #%d follower (distance: %.1f, total rival followers: %d)" % [
+				rival_id, distance, GodStats.rival_followers + 1
+			])
+			_become_rival_follower(rival_id)
 
 func _become_rival_follower(rival_id: int) -> void:
 	current_state = "Witness"
-	role = ""  # Rival followers don't have roles yet
+	role = ""
 	GodStats.add_rival_follower()
-	# Change color to indicate rival (cyan)
 	if sprite:
 		sprite.color = Color.CYAN
