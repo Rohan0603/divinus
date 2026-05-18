@@ -74,7 +74,14 @@ func _process(delta: float) -> void:
 	if Input.is_action_pressed("ui_up"):    dir.y -= 1.0
 	if Input.is_action_pressed("ui_down"):  dir.y += 1.0
 	if dir != Vector2.ZERO:
-		_camera.position += dir.normalized() * CAM_PAN_SPEED * delta
+		var target_pos := _camera.position + dir.normalized() * CAM_PAN_SPEED * delta
+		_smooth_camera_to(target_pos)
+
+func _smooth_camera_to(target_pos: Vector2) -> void:
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(_camera, "global_position", target_pos, 0.3)
 
 func _on_npc_converted(npc: Node) -> void:
 	if not _head_preacher_assigned:
