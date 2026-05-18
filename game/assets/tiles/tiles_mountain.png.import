@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c200listdy0ed"
-path="res://.godot/imported/grass_block_N.png-9833bcea7f70a5e89555c21eb6abd4f2.ctex"
+uid="uid://fl4sg5w4fmyy"
+path="res://.godot/imported/tiles_mountain.png-7ebaa52f0a30d9f269219d54739fa47c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tiles/grass_block_N.png"
-dest_files=["res://.godot/imported/grass_block_N.png-9833bcea7f70a5e89555c21eb6abd4f2.ctex"]
+source_file="res://assets/tiles/tiles_mountain.png"
+dest_files=["res://.godot/imported/tiles_mountain.png-7ebaa52f0a30d9f269219d54739fa47c.ctex"]
 
 [params]
 

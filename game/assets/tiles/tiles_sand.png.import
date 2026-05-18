@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dppp8p71shndl"
-path="res://.godot/imported/planks_S.png-1c431cab97ca63437230acc61f5c3f67.ctex"
+uid="uid://18l3vjlf41as"
+path="res://.godot/imported/tiles_sand.png-62bf6f791c6d9fea349d8c6008289d45.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tiles/planks_S.png"
-dest_files=["res://.godot/imported/planks_S.png-1c431cab97ca63437230acc61f5c3f67.ctex"]
+source_file="res://assets/tiles/tiles_sand.png"
+dest_files=["res://.godot/imported/tiles_sand.png-62bf6f791c6d9fea349d8c6008289d45.ctex"]
 
 [params]
 
