@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://d1ab2cd3kl4xp"]
+[gd_scene format=3 uid="uid://d1ab2cd3kl4xp"]
 
 [ext_resource type="Script" path="res://scenes/rival_god.gd" id="1"]
 

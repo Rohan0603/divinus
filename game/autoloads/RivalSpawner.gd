@@ -36,9 +36,10 @@ func _spawn_rival() -> void:
 	print("Rival god spawned on day ", DayClock.current_day)
 
 func _on_rival_boon_cast(boon_data: Dictionary, position: Vector2) -> void:
-	# When a rival casts a boon, nearby unaware NPCs convert to rival followers
-	# For now, just log it
-	pass
+	var rival_id = boon_data.get("rival_id", 0)
+	print("[RivalSpawner] Rival #%d cast boon at %v (followers: %d, DP: %.1f)" % [
+		rival_id, position, GodStats.rival_followers, GodStats.rival_divine_power
+	])
 
 func _on_game_over() -> void:
 	# Clean up rivals on game over

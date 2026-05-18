@@ -104,3 +104,18 @@ func add_rival_follower() -> void:
 func remove_rival_follower() -> void:
 	rival_followers = max(0, rival_followers - 1)
 	rival_stats_changed.emit()
+
+func reset() -> void:
+	followers = 0
+	divine_power = 20.0
+	god_level = 1
+	shrines_built = 0
+	shrine_sites_pending = 0
+	_shrine_milestones = 0
+	role_counts = {"Builder": 0, "Gatherer": 0, "Farmer": 0, "Defender": 0, "Scholar": 0}
+	rival_divine_power = 0.0
+	rival_followers = 0
+	rival_shrines_built = 0
+	followers_changed.emit(followers)
+	divine_power_changed.emit(divine_power)
+	level_up.emit(god_level)

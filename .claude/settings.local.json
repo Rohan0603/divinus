@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "try { Invoke-WebRequest -Uri 'http://127.0.0.1:8000/mcp' -TimeoutSec 2 -UseBasicParsing | Out-Null } catch { if ($_.Exception.Response) { exit 0 } else { Write-Output '{\"systemMessage\": \"Godot MCP server is not running — please start the Godot AI plugin in the Godot editor (Project > Tools > Godot AI MCP) before working on this project.\"}' } }",
+            "command": "try { Invoke-WebRequest -Uri 'http://localhost:9080/mcp' -TimeoutSec 2 -UseBasicParsing | Out-Null } catch { if ($_.Exception.Response) { exit 0 } else { Write-Output '{\"systemMessage\": \"Godot MCP server is not running — please start the Godot AI plugin in the Godot editor (Project > Tools > Godot AI MCP) before working on this project.\"}' } }",
             "shell": "powershell",
             "statusMessage": "Checking Godot MCP connection..."
           }

@@ -16,16 +16,15 @@ func _ready() -> void:
 	GodStats.add_rival_divine_power(30.0)
 
 func _on_boon_cast_timer() -> void:
-	# Cast a boon if rival has enough DP
 	if GodStats.rival_divine_power >= BOON_COST:
 		GodStats.add_rival_divine_power(-BOON_COST)
-
-		# Pick random position within bounds
 		var boon_pos = Vector2(
 			randf_range(BOON_SPAWN_OFFSET, 1024.0 - BOON_SPAWN_OFFSET),
 			randf_range(BOON_SPAWN_OFFSET, 600.0 - BOON_SPAWN_OFFSET)
 		)
-
+		print("[RivalGod #%d] Cast boon at %v (DP: %.1f → %.1f)" % [
+			_rival_id, boon_pos, GodStats.rival_divine_power + BOON_COST, GodStats.rival_divine_power
+		])
 		EventBus.rival_boon_cast.emit({"rival_id": _rival_id}, boon_pos)
 
 func _on_game_over() -> void:

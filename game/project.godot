@@ -21,8 +21,11 @@ GodStats="*res://autoloads/GodStats.gd"
 DayClock="*res://autoloads/DayClock.gd"
 EnemySpawner="*res://autoloads/EnemySpawner.gd"
 RivalSpawner="*res://autoloads/RivalSpawner.gd"
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/ai_game_builder/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
+
+[filesystem]
+
+import/blender/enabled=false

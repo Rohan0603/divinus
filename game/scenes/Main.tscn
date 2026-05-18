@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ce64emm77nx6s" path="res://scenes/main.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://c1l3gxgqvrdja" path="res://scenes/HUD.tscn" id="2"]
+[ext_resource type="Script" uid="uid://bsg12huaf1u5i" path="res://addons/godot_mcp/runtime/mcp_runtime_probe.gd" id="3_0bbpv"]
 
 [node name="Main" type="Node2D" unique_id=882132732]
 script = ExtResource("1")
@@ -20,8 +21,11 @@ offset_bottom = 600.0
 color = Color(0.4, 0.4, 0.4, 1)
 
 [node name="TileMap" type="TileMap" parent="." unique_id=389683112]
-format = 3
+format = 2
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=440001646]
 
 [node name="HUD" parent="UI" unique_id=1910180231 instance=ExtResource("2")]
+
+[node name="MCPRuntimeProbe" type="Node" parent="." unique_id=1878363229]
+script = ExtResource("3_0bbpv")
