@@ -8,11 +8,11 @@ const _TINTS := {
 	WorldGenerator.Biome.FOREST:   Color(0.28, 0.55, 0.18),
 	WorldGenerator.Biome.MOUNTAIN: Color(0.65, 0.65, 0.65),
 }
-const _BASE_TEXTURE := "res://assets/tiles/isometric_terrain.png"
+const _BASE_TEXTURE := "res://assets/tiles/grass_block_S.png"
 
 func build_tileset() -> TileSet:
 	var ts := TileSet.new()
-	ts.tile_size        = Vector2i(16, 17)
+	ts.tile_size        = Vector2i(64, 32)
 	ts.tile_shape       = TileSet.TILE_SHAPE_ISOMETRIC
 	ts.tile_layout      = TileSet.TILE_LAYOUT_DIAMOND_DOWN
 	ts.tile_offset_axis = TileSet.TILE_OFFSET_AXIS_HORIZONTAL
@@ -25,6 +25,7 @@ func build_tileset() -> TileSet:
 
 func _make_source(path: String, tint: Color) -> TileSetAtlasSource:
 	var img: Image = (load(path) as Texture2D).get_image()
+	img.resize(64, 128, Image.INTERPOLATE_BILINEAR)
 	img.convert(Image.FORMAT_RGBA8)
 	for x in range(img.get_width()):
 		for y in range(img.get_height()):
@@ -33,7 +34,7 @@ func _make_source(path: String, tint: Color) -> TileSetAtlasSource:
 				img.set_pixel(x, y, Color(p.r * tint.r, p.g * tint.g, p.b * tint.b, p.a))
 	var src := TileSetAtlasSource.new()
 	src.texture             = ImageTexture.create_from_image(img)
-	src.texture_region_size = Vector2i(16, 17)
+	src.texture_region_size = Vector2i(64, 128)
 	src.create_tile(Vector2i(0, 0))
 	return src
 
