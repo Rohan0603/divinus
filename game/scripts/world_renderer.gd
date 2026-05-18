@@ -8,7 +8,7 @@ const _TINTS := {
 	WorldGenerator.Biome.FOREST:   Color(0.28, 0.55, 0.18),
 	WorldGenerator.Biome.MOUNTAIN: Color(0.65, 0.65, 0.65),
 }
-const _BASE_TEXTURE := "res://assets/tiles/medieval_fantasy_clean.png"
+const _BASE_TEXTURE := "res://assets/tiles/isometric_medieval_fantasy_tiles.png"
 
 func build_tileset() -> TileSet:
 	var ts := TileSet.new()

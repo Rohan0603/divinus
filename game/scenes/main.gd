@@ -33,18 +33,12 @@ func _ready() -> void:
 	EventBus.enemy_spawned.connect(_on_enemy_spawned)
 	EventBus.day_won.connect(_on_day_won)
 	GodStats.game_over.connect(_on_game_over)
-	_extract_clean_tiles()
 	_world_gen.generate(randi())
 	_populate_terrain()
 	_land_positions = _world_gen.get_land_positions($TileMap)
 	_spawn_vegetation()
 	RivalSpawner.set_world_root(self)
 	_spawn_npcs()
-
-func _extract_clean_tiles() -> void:
-	var output_path := "res://assets/tiles/medieval_fantasy_clean.png"
-	if not ResourceLoader.exists(output_path):
-		TileExtractor.extract_clean_tiles("res://assets/tiles/isometric_medieval_fantasy_tiles.png", output_path)
 
 func _spawn_npcs() -> void:
 	var available := _land_positions.duplicate()
