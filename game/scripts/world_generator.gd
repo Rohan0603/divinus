@@ -12,8 +12,8 @@ func generate(gen_seed: int) -> void:
 	var noise := FastNoiseLite.new()
 	noise.noise_type         = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	noise.seed               = gen_seed
-	noise.frequency          = 0.035
-	noise.fractal_octaves    = 4
+	noise.frequency          = 0.025
+	noise.fractal_octaves    = 5
 	noise.fractal_gain       = 0.5
 	noise.fractal_lacunarity = 2.0
 
@@ -26,9 +26,9 @@ func generate(gen_seed: int) -> void:
 		biome_map.append(row_arr)
 
 func _to_biome(elev: float) -> int:
-	if elev < -0.3:  return Biome.WATER
-	if elev < -0.1:  return Biome.SAND
-	if elev <  0.2:  return Biome.PLAINS
+	if elev < -0.25: return Biome.WATER
+	if elev < -0.05: return Biome.SAND
+	if elev <  0.25: return Biome.PLAINS
 	if elev <  0.45: return Biome.FOREST
 	return Biome.MOUNTAIN
 

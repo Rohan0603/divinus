@@ -185,13 +185,13 @@ func _spawn_vegetation() -> void:
 			var veg_scale: float
 			match biome:
 				WorldGenerator.Biome.FOREST:
-					assets = FOREST_ASSETS;   density = 0.12; veg_scale = 0.42
+					assets = FOREST_ASSETS;   density = 0.08; veg_scale = 0.50
 				WorldGenerator.Biome.PLAINS:
-					assets = PLAINS_ASSETS;   density = 0.04; veg_scale = 0.28
+					assets = PLAINS_ASSETS;   density = 0.04; veg_scale = 0.42
 				WorldGenerator.Biome.SAND:
-					assets = SAND_ASSETS;     density = 0.03; veg_scale = 0.35
+					assets = SAND_ASSETS;     density = 0.03; veg_scale = 0.45
 				WorldGenerator.Biome.MOUNTAIN:
-					assets = MOUNTAIN_ASSETS; density = 0.02; veg_scale = 0.35
+					assets = MOUNTAIN_ASSETS; density = 0.02; veg_scale = 0.48
 				_:
 					continue
 			if randf() > density:
