@@ -25,7 +25,7 @@ func _make_source(path: String) -> TileSetAtlasSource:
 	var tex: Texture2D = load(path) if ResourceLoader.exists(path) else load(fallback)
 	var src := TileSetAtlasSource.new()
 	src.texture = tex
-	src.texture_region_size = Vector2i(64, 32)
+	src.texture_region_size = Vector2i(512, 256)
 	for r in range(5):
 		for c in range(2):
 			src.create_tile(Vector2i(c, r))
