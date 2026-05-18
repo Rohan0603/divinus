@@ -6,7 +6,7 @@ const HEIGHT := 80
 
 enum Biome { WATER = 0, SAND = 1, PLAINS = 2, FOREST = 3, MOUNTAIN = 4 }
 
-var biome_map: Array[Array[int]] = []
+var biome_map: Array = []
 
 func generate(gen_seed: int) -> void:
 	var noise := FastNoiseLite.new()
@@ -35,13 +35,11 @@ func _to_biome(elev: float) -> int:
 func get_biome(col: int, row: int) -> int:
 	return biome_map[col][row]
 
-# Returns world-space positions of all non-water, non-mountain tiles.
-# Call AFTER tilemap.position is set (i.e. after _populate_terrain).
 func get_land_positions(tilemap: TileMap) -> Array:
 	var positions: Array = []
 	for col in range(WIDTH):
 		for row in range(HEIGHT):
-			var b := biome_map[col][row]
+			var b = biome_map[col][row]
 			if b != Biome.WATER and b != Biome.MOUNTAIN:
 				positions.append(tilemap.to_global(tilemap.map_to_local(Vector2i(col, row))))
 	return positions
