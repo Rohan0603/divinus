@@ -21,7 +21,7 @@ func build_tileset() -> TileSet:
 	return ts
 
 func _make_source(path: String) -> TileSetAtlasSource:
-	var fallback := "res://assets/tiles/isometric_medieval_fantasy_tiles.png"
+	var fallback := "res://assets/tiles/tiles_water.png"
 	var tex: Texture2D = load(path) if ResourceLoader.exists(path) else load(fallback)
 	var src := TileSetAtlasSource.new()
 	src.texture = tex
