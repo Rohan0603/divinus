@@ -4,43 +4,42 @@
 
 | Property | Value |
 |----------|-------|
-| Sheet dimensions | **128 × 160 pixels** |
+| Sheet dimensions | **1024 × 1280 pixels** |
 | Grid | 2 columns × 5 rows |
-| Tile size | **64 × 32 px** per tile (2:1 isometric ratio) |
+| Tile size | **512 × 256 px** per tile (2:1 isometric ratio) |
 | Tile (0,0) origin | Pixel (0, 0) — zero padding/margin |
 | Format | PNG, RGBA 32-bit |
 | Transparency | Outside the isometric diamond = fully transparent (alpha = 0) |
 
-> Why 128×160 not 176×170? Godot reads tile (col,row) at pixel offset (col×64, row×32).
-> Columns 128–175 and rows 160–169 of the old sheet were never read. New sheets use
-> the exact pixel footprint — no wasted space.
+> Godot reads tile (col,row) at pixel offset (col×512, row×256).
+> Zero padding means tile content must start exactly at those offsets — no empty margin inside cells.
 
 ### Sheet Tile Layout
 
 ```
-Column →    0         1
-         +--------+--------+   <- each column = 64 px
-Row 0    |  (0,0) |  (1,0) |
-         +--------+--------+
-Row 1    |  (0,1) |  (1,1) |
-         +--------+--------+
-Row 2    |  (0,2) |  (1,2) |
-         +--------+--------+
-Row 3    |  (0,3) |  (1,3) |
-         +--------+--------+
-Row 4    |  (0,4) |  (1,4) |
-         +--------+--------+
-              ^ each row = 32 px => total 160 px tall
+Column →    0              1
+         +----------+----------+   <- each column = 512 px
+Row 0    |   (0,0)  |   (1,0)  |
+         +----------+----------+
+Row 1    |   (0,1)  |   (1,1)  |
+         +----------+----------+
+Row 2    |   (0,2)  |   (1,2)  |
+         +----------+----------+
+Row 3    |   (0,3)  |   (1,3)  |
+         +----------+----------+
+Row 4    |   (0,4)  |   (1,4)  |
+         +----------+----------+
+              ^ each row = 256 px => total 1280 px tall
 ```
 
 ## Isometric Diamond Shape (per tile)
 
-Every tile is a diamond (rhombus) within its 64×32 cell:
+Every tile is a diamond (rhombus) within its 512×256 cell:
 
-- Top vertex:    (32,  0) — center of top edge
-- Right vertex:  (63, 15) — rightmost pixel
-- Bottom vertex: (32, 31) — center of bottom edge
-- Left vertex:   ( 0, 15) — leftmost pixel
+- Top vertex:    (256,   0) — center of top edge
+- Right vertex:  (511, 127) — rightmost pixel
+- Bottom vertex: (256, 255) — center of bottom edge
+- Left vertex:   (  0, 127) — leftmost pixel
 
 Pixels outside this diamond = fully transparent.
 
@@ -90,7 +89,7 @@ A player must identify the biome from tile color alone at a glance.
 **AI Prompt Template:**
 
 ```
-Isometric game tile, 64x32 pixels, painted 2D style, top-down isometric
+Isometric game tile, 512x256 pixels, painted 2D style, top-down isometric
 perspective, [VARIANT], transparent background outside diamond, deep blue
 ocean water, palette from deep navy #1a4f7a to bright aqua #5aacd4,
 top-left lighting, no borders, seamless game asset, high detail
@@ -125,7 +124,7 @@ Replace `[VARIANT]` with each row description above.
 **AI Prompt Template:**
 
 ```
-Isometric game tile, 64x32 pixels, painted 2D style, top-down isometric
+Isometric game tile, 512x256 pixels, painted 2D style, top-down isometric
 perspective, [VARIANT], transparent background outside diamond, warm desert
 sand tile, palette golden tan #d4a853 to ochre #b8854a, top-left lighting,
 no borders, seamless game asset
@@ -158,7 +157,7 @@ no borders, seamless game asset
 **AI Prompt Template:**
 
 ```
-Isometric game tile, 64x32 pixels, painted 2D style, top-down isometric
+Isometric game tile, 512x256 pixels, painted 2D style, top-down isometric
 perspective, [VARIANT], transparent background outside diamond, vibrant
 green meadow grass tile, palette lime #6ab846 to golden #a09444,
 top-left lighting, no borders, seamless game asset
@@ -191,7 +190,7 @@ top-left lighting, no borders, seamless game asset
 **AI Prompt Template:**
 
 ```
-Isometric game tile, 64x32 pixels, painted 2D style, top-down isometric
+Isometric game tile, 512x256 pixels, painted 2D style, top-down isometric
 perspective, [VARIANT], transparent background outside diamond, dark forest
 floor tile, palette deep forest green #1e3d14 to earthy brown #5e4a2c,
 dappled top-left lighting through canopy, no borders, seamless game asset
@@ -224,7 +223,7 @@ dappled top-left lighting through canopy, no borders, seamless game asset
 **AI Prompt Template:**
 
 ```
-Isometric game tile, 64x32 pixels, painted 2D style, top-down isometric
+Isometric game tile, 512x256 pixels, painted 2D style, top-down isometric
 perspective, [VARIANT], transparent background outside diamond, grey rocky
 mountain tile, palette slate grey #787878 to near-white snow #e8f0ff,
 top-left lighting, no borders, seamless game asset
@@ -263,7 +262,7 @@ Reference: docs.godotengine.org — Using Tilemaps (Terrain section)
 
 ## Validation Checklist Before Importing to Godot
 
-- [ ] Image is exactly **128 × 160 pixels**
+- [ ] Image is exactly **1024 × 1280 pixels**
 - [ ] Exactly 10 tiles visible in grid preview (2 cols × 5 rows)
 - [ ] Diamond area filled with color, outside diamond fully transparent (alpha = 0)
 - [ ] No dark halo around edges (export with **straight alpha**, NOT premultiplied)
