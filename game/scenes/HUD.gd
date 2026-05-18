@@ -8,8 +8,8 @@ extends CanvasLayer
 @onready var energy_label: Label = $VBoxContainer/DivinePowerLabel
 @onready var followers_label: Label = $VBoxContainer/FollowersLabel
 @onready var level_label: Label = $VBoxContainer/LevelLabel
-@onready var day_label: Label = $DayLabel
-@onready var rival_label: Label = $RivalLabel
+@onready var day_label: Label = $VBoxContainer/DayLabel
+@onready var rival_label: Label = $VBoxContainer/RivalLabel
 @onready var fastforward_notification_label: Label = $FastForwardNotificationLabel
 
 # Notification system
@@ -27,8 +27,8 @@ func _ready() -> void:
 	# Connect to rival stats changes
 	GodStats.rival_stats_changed.connect(_on_rival_stats_changed)
 
-	# Increase font size to 40pt for all labels
-	var font_size = 40
+	# Increase font size to 24pt for all labels
+	var font_size = 24
 	energy_label.add_theme_font_size_override("font_size", font_size)
 	followers_label.add_theme_font_size_override("font_size", font_size)
 	level_label.add_theme_font_size_override("font_size", font_size)
